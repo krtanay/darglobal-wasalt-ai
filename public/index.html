@@ -3,290 +3,548 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DarGlobal & Wasalt Real Estate AI Advisor</title>
+  <title>DarGlobal × Wasalt — Luxury Real Estate AI Advisor</title>
+  
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Markdown Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['"Cinzel"', 'Georgia', 'serif'],
+          },
           colors: {
             gold: {
+              300: '#fae8b2',
               400: '#f5d77f',
               500: '#d4af37',
-              600: '#aa8c2c',
-              700: '#80681e'
+              600: '#b89228',
+              700: '#8c6b16',
             },
             estate: {
-              900: '#0b0f17',
-              850: '#111827',
-              800: '#161f30',
-              750: '#1e293b',
-              700: '#334155'
+              950: '#060910',
+              900: '#0a0f1d',
+              850: '#0f172a',
+              800: '#17223b',
+              750: '#1e2d4d',
+              700: '#2b3d63',
+              600: '#3e5485',
             }
+          },
+          boxShadow: {
+            'gold-glow': '0 0 25px -5px rgba(212, 175, 55, 0.25)',
+            'gold-sm': '0 0 15px -3px rgba(212, 175, 55, 0.2)',
+            'card-elevated': '0 10px 30px -10px rgba(0, 0, 0, 0.6)',
           }
         }
       }
     }
   </script>
+  
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0b0f17; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #060910; }
+    ::-webkit-scrollbar-thumb { background: #1e2d4d; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
-    
-    .prose a { color: #f5d77f; text-decoration: underline; }
-    .prose h3, .prose h4 { color: #f8fafc; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; }
-    .prose p { margin-bottom: 0.5rem; line-height: 1.6; }
-    .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
-    .prose blockquote { border-left: 3px solid #d4af37; padding-left: 0.75rem; font-style: italic; color: #94a3b8; }
-    
+
+    /* Focus accessibility styling */
+    *:focus-visible {
+      outline: 2px solid #d4af37;
+      outline-offset: 2px;
+    }
+
+    /* Markdown prose formatting */
+    .prose a { color: #f5d77f; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
+    .prose a:hover { color: #ffffff; }
+    .prose h3, .prose h4 { color: #ffffff; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+    .prose p { margin-bottom: 0.75rem; line-height: 1.7; color: #cbd5e1; }
+    .prose ul { list-style-type: none; padding-left: 0; margin-bottom: 0.75rem; }
+    .prose ul li { position: relative; padding-left: 1.25rem; margin-bottom: 0.4rem; color: #cbd5e1; }
+    .prose ul li::before { content: "▪"; position: absolute; left: 0; color: #d4af37; font-size: 0.9rem; }
+    .prose strong { color: #ffffff; font-weight: 600; }
+    .prose blockquote { border-left: 3px solid #d4af37; padding-left: 1rem; margin: 0.75rem 0; font-style: italic; color: #94a3b8; background: rgba(212, 175, 55, 0.05); padding-top: 0.5rem; padding-bottom: 0.5rem; border-radius: 0 0.5rem 0.5rem 0; }
+    .prose code { background: #17223b; color: #f5d77f; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; }
+
+    /* Streaming blinking cursor */
     .cursor-pulse {
       display: inline-block;
-      width: 6px;
-      height: 14px;
-      background-color: #d4af37;
+      width: 7px;
+      height: 15px;
+      background: linear-gradient(180deg, #f5d77f, #d4af37);
       vertical-align: middle;
-      margin-left: 2px;
-      animation: blink 0.8s infinite;
+      margin-left: 3px;
+      border-radius: 1px;
+      animation: cursorBlink 0.9s infinite;
     }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0; transform: scaleY(0.8); }
+    }
+
+    /* Ambient background gradient */
+    .luxury-radial-bg {
+      background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, rgba(10, 15, 29, 0) 50%),
+                  radial-gradient(circle at 100% 100%, rgba(30, 45, 77, 0.2) 0%, rgba(6, 9, 16, 0) 60%),
+                  #060910;
+    }
+
+    /* Subtle shimmer animation for loading */
+    @keyframes shimmer {
+      100% { transform: translateX(100%); }
+    }
+    .skeleton-shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      transform: translateX(-100%);
+      background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(212,175,55,0.06) 50%, rgba(255,255,255,0) 100%);
+      animation: shimmer 1.8s infinite;
+    }
   </style>
 </head>
-<body class="bg-estate-900 text-slate-100 flex flex-col h-screen font-sans overflow-hidden">
 
-  <!-- Top Navigation Header -->
-  <header class="border-b border-estate-750 bg-estate-850/90 backdrop-blur px-4 py-3 flex items-center justify-between z-20">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-500 to-amber-700 flex items-center justify-center shadow-lg shadow-gold-500/10">
-        <i data-lucide="building-2" class="w-5 h-5 text-estate-900"></i>
+<body class="luxury-radial-bg text-slate-100 flex flex-col h-screen font-sans overflow-hidden antialiased selection:bg-gold-500/30 selection:text-gold-300">
+
+  <!-- ========================================== -->
+  <!-- TOP EXECUTIVE NAVIGATION BAR                -->
+  <!-- ========================================== -->
+  <header class="border-b border-estate-750/70 bg-estate-900/80 backdrop-blur-xl px-4 lg:px-6 py-2.5 flex items-center justify-between z-30 shrink-0">
+    
+    <!-- Brand Identity -->
+    <div class="flex items-center space-x-3.5">
+      <div class="relative group cursor-pointer" onclick="clearHistory()" title="Reset to Welcome Screen">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 via-gold-500 to-amber-700 p-[1.5px] shadow-gold-sm transition-transform duration-300 group-hover:scale-105">
+          <div class="w-full h-full bg-estate-950 rounded-[10px] flex items-center justify-center">
+            <i data-lucide="building-2" class="w-5 h-5 text-gold-400"></i>
+          </div>
+        </div>
+        <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-estate-950 rounded-full" title="RAG Engine Active"></span>
       </div>
+
       <div>
         <div class="flex items-center space-x-2">
-          <h1 class="text-base font-bold tracking-tight text-white">DarGlobal <span class="text-gold-500">×</span> Wasalt</h1>
-          <span class="text-[10px] uppercase font-bold tracking-wider bg-gold-500/10 text-gold-400 border border-gold-500/30 px-2 py-0.5 rounded-full">AI Advisor Pro</span>
+          <span class="font-display text-sm sm:text-base font-bold tracking-wider text-white">DARGLOBAL</span>
+          <span class="text-gold-500 font-serif font-light text-sm">×</span>
+          <span class="font-display text-sm sm:text-base font-bold tracking-wider text-slate-200">WASALT</span>
+          <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-gold-500/10 text-gold-400 border border-gold-500/30 shadow-inner">
+            AI Luxury Advisor
+          </span>
         </div>
-        <p class="text-xs text-slate-400 hidden sm:block">Ultra-Luxury International Branded Residences & Saudi PropTech Marketplace</p>
+        <p class="text-[11px] text-slate-400 tracking-tight hidden sm:block">
+          International Branded Architecture & Saudi PropTech Intelligence
+        </p>
       </div>
     </div>
 
+    <!-- Center Status Indicator (Desktop) -->
+    <div class="hidden lg:flex items-center space-x-4 text-xs">
+      <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-estate-850/80 border border-estate-750/60 text-slate-300">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="text-[11px] font-medium text-slate-300">Hybrid BM25 + Semantic RRF Active</span>
+      </div>
+      <div class="text-[11px] text-slate-400 font-mono flex items-center space-x-1.5">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-gold-400"></i>
+        <span>REGA Licensed & Verified</span>
+      </div>
+    </div>
+
+    <!-- Right Controls Toolbar -->
     <div class="flex items-center space-x-2 sm:space-x-3">
+      
       <!-- Model Selector -->
-      <div class="relative hidden md:block">
-        <select id="modelSelect" class="bg-estate-800 text-xs border border-estate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-gold-500">
-          <option value="nvidia/nemotron-3.5-lightning:free">Nemotron 3.5 Lightning (Free)</option>
-          <option value="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free">Nemotron Omni Reasoning (Free)</option>
-          <option value="google/gemma-4-31b-it:free">Gemma 4 31B (Free)</option>
-          <option value="liquid/lfm-3-1.7b:free">Liquid LFM (Free)</option>
-          <option value="inclusionai/ling-3.2-flash:free">Ling 3.2 Flash (Free)</option>
+      <div class="relative hidden sm:block">
+        <select 
+          id="modelSelect" 
+          aria-label="Select AI Model"
+          class="bg-estate-850/90 text-xs border border-estate-700/80 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-gold-500/80 transition cursor-pointer pr-7 appearance-none"
+        >
+          <option value="nvidia/nemotron-3.5-lightning:free">⚡ Nemotron 3.5 Lightning (Free)</option>
+          <option value="google/gemma-4-31b-it:free">💎 Gemma 4 31B (Free)</option>
+          <option value="liquid/lfm-3-1.7b:free">🚀 Liquid LFM (Free)</option>
+          <option value="inclusionai/ling-3.2-flash:free">🌐 Ling 3.2 Flash (Free)</option>
         </select>
+        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2.5 pointer-events-none"></i>
       </div>
 
-      <!-- Catalog Toggle Button -->
-      <button onclick="toggleCatalog()" class="text-xs flex items-center space-x-1.5 bg-estate-800 hover:bg-estate-750 border border-estate-700 px-3 py-1.5 rounded-lg transition text-slate-300">
-        <i data-lucide="layers" class="w-3.5 h-3.5 text-gold-400"></i>
-        <span class="hidden sm:inline">Visual Catalog</span>
-        <span id="propCountBadge" class="bg-estate-700 text-gold-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">23</span>
+      <!-- Visual Catalog Toggle Button -->
+      <button 
+        onclick="toggleCatalog()" 
+        aria-label="Toggle Visual Property Catalog"
+        class="text-xs flex items-center space-x-1.5 bg-estate-850 hover:bg-estate-800 border border-estate-750 hover:border-gold-500/40 px-3 py-1.5 rounded-lg transition text-slate-200 shadow-sm"
+      >
+        <i data-lucide="building" class="w-3.5 h-3.5 text-gold-400"></i>
+        <span class="hidden md:inline font-medium">Catalog</span>
+        <span id="propCountBadge" class="bg-gold-500/20 text-gold-400 border border-gold-500/30 text-[10px] px-1.5 py-0.2 rounded-full font-bold">23</span>
       </button>
 
-      <!-- Clear History Button -->
-      <button onclick="clearHistory()" title="Clear Conversation History" class="text-xs flex items-center space-x-1 bg-estate-800 hover:bg-estate-750 border border-estate-700 px-2.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white">
-        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      <!-- Clear Chat Button -->
+      <button 
+        onclick="clearHistory()" 
+        aria-label="Reset Conversation History" 
+        title="Start New Conversation" 
+        class="text-xs p-1.5 bg-estate-850 hover:bg-estate-800 border border-estate-750 rounded-lg transition text-slate-400 hover:text-white"
+      >
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
       </button>
 
-      <!-- API Key Modal Button -->
-      <button onclick="openConfigModal()" class="text-xs flex items-center space-x-1.5 bg-gradient-to-r from-gold-600 to-amber-600 hover:from-gold-500 hover:to-amber-500 text-estate-900 font-semibold px-3 py-1.5 rounded-lg shadow transition">
-        <i data-lucide="key" class="w-3.5 h-3.5"></i>
-        <span id="apiKeyBtnText">OpenRouter Key</span>
+      <!-- API Key Modal Trigger -->
+      <button 
+        onclick="openConfigModal()" 
+        aria-label="Configure OpenRouter API Key"
+        class="text-xs flex items-center space-x-1.5 bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-estate-950 font-semibold px-3 py-1.5 rounded-lg shadow-gold-sm transition duration-200"
+      >
+        <i data-lucide="key" class="w-3.5 h-3.5 text-estate-950"></i>
+        <span id="apiKeyBtnText" class="hidden sm:inline">OpenRouter Key</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Container -->
+  <!-- ========================================== -->
+  <!-- MAIN WORKSPACE LAYOUT                       -->
+  <!-- ========================================== -->
   <div class="flex flex-1 overflow-hidden relative">
 
-    <!-- Chat Column -->
-    <main class="flex-1 flex flex-col h-full bg-estate-900 overflow-hidden relative">
+    <!-- Primary Chat Column -->
+    <main class="flex-1 flex flex-col h-full bg-transparent overflow-hidden relative">
       
-      <!-- Source Filter Pill Tabs & Status -->
-      <div class="px-4 py-2 border-b border-estate-800/80 bg-estate-850/40 flex items-center justify-between text-xs">
+      <!-- Portfolio Scope Filter Tabs -->
+      <div class="px-4 py-2 border-b border-estate-800/80 bg-estate-900/60 backdrop-blur-md flex items-center justify-between text-xs shrink-0">
         <div class="flex items-center space-x-2">
-          <span class="text-slate-400">Filter:</span>
-          <button onclick="setSourceFilter('')" id="filter-all" class="px-2.5 py-1 rounded-full text-xs font-medium transition bg-gold-500/20 text-gold-400 border border-gold-500/30">All Sources</button>
-          <button onclick="setSourceFilter('DarGlobal')" id="filter-darglobal" class="px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200">DarGlobal (Luxury)</button>
-          <button onclick="setSourceFilter('Wasalt')" id="filter-wasalt" class="px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200">Wasalt (Saudi Arabia)</button>
+          <span class="text-slate-400 text-[11px] font-medium uppercase tracking-wider hidden sm:inline">Scope:</span>
+          <div class="flex items-center space-x-1.5 bg-estate-950/60 p-1 rounded-xl border border-estate-800">
+            <button onclick="setSourceFilter('')" id="filter-all" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition bg-gold-500/20 text-gold-300 border border-gold-500/30">
+              All Portfolios
+            </button>
+            <button onclick="setSourceFilter('DarGlobal')" id="filter-darglobal" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200">
+              DarGlobal (International)
+            </button>
+            <button onclick="setSourceFilter('Wasalt')" id="filter-wasalt" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200">
+              Wasalt (Saudi Arabia)
+            </button>
+          </div>
         </div>
-        <div class="hidden sm:flex items-center space-x-3 text-[11px]">
-          <span class="flex items-center space-x-1 text-gold-400"><i data-lucide="zap" class="w-3 h-3"></i><span>Real-Time SSE Streaming</span></span>
-          <span class="flex items-center space-x-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Memory & RRF Active</span></span>
+
+        <div class="flex items-center space-x-3 text-[11px]">
+          <span class="flex items-center space-x-1 text-gold-400/90 font-medium">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-gold-400"></i>
+            <span class="hidden sm:inline">Sub-200ms SSE Streaming</span>
+          </span>
         </div>
       </div>
 
       <!-- Chat Messages Scroll Container -->
-      <div id="chatContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+      <div id="chatContainer" class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 scroll-smooth">
         
-        <!-- Welcome Message -->
-        <div class="flex items-start space-x-3 max-w-3xl">
-          <div class="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
-            <i data-lucide="bot" class="w-4 h-4 text-gold-400"></i>
-          </div>
-          <div class="bg-estate-800/90 border border-estate-750 p-4 rounded-2xl rounded-tl-sm text-slate-200 shadow-lg text-sm leading-relaxed">
-            <p class="font-semibold text-white mb-2">Welcome to the DarGlobal & Wasalt Real Estate AI Advisor.</p>
-            <p class="text-slate-300 mb-3">
-              I provide conversational guidance with <strong>multi-turn memory</strong> and <strong>real-time streaming</strong> across:
-            </p>
-            <ul class="space-y-1 mb-3 text-slate-300 text-xs sm:text-sm">
-              <li>✨ <strong>DarGlobal Portfolio:</strong> International branded luxury in Dubai, Spain, Oman, Qatar, and London (Lamborghini, Missoni, Aston Martin, Trump).</li>
-              <li>🇸🇦 <strong>Wasalt Platform:</strong> REGA-licensed Saudi properties, villas, townhouses, and master developments in Riyadh, Jeddah, and Al-Khobar.</li>
-            </ul>
-            <p class="text-xs text-gold-400/90">Click any prompt chip or ask any question to start:</p>
+        <!-- Welcome Hero Card -->
+        <div class="max-w-3xl mx-auto rounded-2xl bg-gradient-to-b from-estate-850/90 to-estate-900/90 border border-estate-750/70 p-5 sm:p-6 shadow-card-elevated backdrop-blur-md relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="flex items-start space-x-4">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-gold-400/30 via-gold-500/20 to-amber-700/20 border border-gold-500/40 flex items-center justify-center shrink-0 shadow-gold-sm">
+              <i data-lucide="sparkles" class="w-5 h-5 text-gold-400"></i>
+            </div>
+            
+            <div class="flex-1">
+              <div class="flex items-center space-x-2 mb-1">
+                <h2 class="font-display text-base sm:text-lg font-bold text-white tracking-wide">
+                  Luxury Real Estate Advisory Intelligence
+                </h2>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+                Powered by autonomous data ingestion from official developer portals and grounded via enterprise-grade Hybrid RAG.
+              </p>
+
+              <!-- Two Developer Pillars -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                
+                <!-- Pillar 1: DarGlobal -->
+                <div class="p-3.5 rounded-xl bg-estate-950/70 border border-estate-750/60 hover:border-gold-500/30 transition">
+                  <div class="flex items-center space-x-2 text-gold-400 font-semibold text-xs mb-1">
+                    <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                    <span>DarGlobal International</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 leading-normal">
+                    Ultra-luxury residences co-designed with <strong>Lamborghini</strong>, <strong>Pagani</strong>, <strong>Missoni</strong>, <strong>Aston Martin</strong>, and the <strong>Trump Organization</strong> across Dubai, Spain, London, Qatar, and Oman.
+                  </p>
+                </div>
+
+                <!-- Pillar 2: Wasalt -->
+                <div class="p-3.5 rounded-xl bg-estate-950/70 border border-estate-750/60 hover:border-emerald-500/30 transition">
+                  <div class="flex items-center space-x-2 text-emerald-400 font-semibold text-xs mb-1">
+                    <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                    <span>Wasalt PropTech (Saudi Arabia)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 leading-normal">
+                    REGA-certified master developments, residential villas, and duplexes across Riyadh, Jeddah, Dammam, and Al-Khobar with verified licensing.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quick prompt recommendations header -->
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-gold-400/80 mb-2">
+                Curated Executive Inquiries:
+              </p>
+              
+              <!-- Quick Chips inside Welcome -->
+              <div class="flex flex-wrap gap-2">
+                <button onclick="usePrompt('Show me luxury branded residences in Dubai by DarGlobal')" class="text-xs bg-estate-800/80 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700/70 text-slate-200 px-3 py-1.5 rounded-lg transition inline-flex items-center space-x-1.5 shadow-sm">
+                  <span>🏎️</span>
+                  <span>Branded Dubai residences by DarGlobal</span>
+                </button>
+                <button onclick="usePrompt('What luxury villas are available in Riyadh on Wasalt under 4M SAR?')" class="text-xs bg-estate-800/80 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700/70 text-slate-200 px-3 py-1.5 rounded-lg transition inline-flex items-center space-x-1.5 shadow-sm">
+                  <span>🇸🇦</span>
+                  <span>Villas in Riyadh under 4M SAR on Wasalt</span>
+                </button>
+                <button onclick="usePrompt('Tell me about the Tierra Viva Lamborghini villas in Spain')" class="text-xs bg-estate-800/80 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700/70 text-slate-200 px-3 py-1.5 rounded-lg transition inline-flex items-center space-x-1.5 shadow-sm">
+                  <span>🏖️</span>
+                  <span>Lamborghini Tierra Viva villas in Spain</span>
+                </button>
+                <button onclick="usePrompt('Compare DarGlobal luxury projects with Wasalt Saudi developments')" class="text-xs bg-estate-800/80 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700/70 text-slate-200 px-3 py-1.5 rounded-lg transition inline-flex items-center space-x-1.5 shadow-sm">
+                  <span>⚖️</span>
+                  <span>Compare DarGlobal vs Wasalt offerings</span>
+                </button>
+              </div>
+
+            </div>
           </div>
         </div>
 
       </div>
 
-      <!-- Quick Prompt Suggestion Chips -->
-      <div class="px-4 py-2 bg-estate-850/40 border-t border-estate-800/60 overflow-x-auto flex space-x-2 shrink-0">
-        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+      <!-- Quick Prompt Suggestion Carousel (Pinned above input) -->
+      <div class="px-4 py-2 bg-estate-950/80 border-t border-estate-800/60 overflow-x-auto flex space-x-2 shrink-0 scrollbar-none">
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-900 hover:bg-estate-800 hover:border-gold-500/40 border border-estate-750 text-slate-300 px-3 py-1.5 rounded-full transition">
           Show me luxury branded residences in Dubai by DarGlobal
         </button>
-        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-900 hover:bg-estate-800 hover:border-gold-500/40 border border-estate-750 text-slate-300 px-3 py-1.5 rounded-full transition">
           What villas are available in Riyadh on Wasalt under 4M SAR?
         </button>
-        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
-          Tell me about the Tierra Viva Lamborghini villas in Spain
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-900 hover:bg-estate-800 hover:border-gold-500/40 border border-estate-750 text-slate-300 px-3 py-1.5 rounded-full transition">
+          Tell me about Trump International luxury villas in Oman
         </button>
-        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
-          Compare DarGlobal luxury projects with Wasalt Saudi developments
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-900 hover:bg-estate-800 hover:border-gold-500/40 border border-estate-750 text-slate-300 px-3 py-1.5 rounded-full transition">
+          Which properties feature private pools or branded interiors?
         </button>
       </div>
 
       <!-- Input Bar Form -->
-      <div class="p-4 bg-estate-850 border-t border-estate-750 shrink-0">
-        <form id="chatForm" onsubmit="handleSend(event)" class="max-w-4xl mx-auto flex items-center space-x-2">
-          <input 
-            type="text" 
-            id="userInput" 
-            placeholder="Ask about properties, pricing, locations, or ask follow-ups like 'how many bedrooms does it have?'..." 
-            autocomplete="off"
-            class="flex-1 bg-estate-900 border border-estate-700 text-slate-100 placeholder-slate-500 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition shadow-inner"
-          />
+      <div class="p-4 bg-estate-900/90 border-t border-estate-750/80 backdrop-blur-md shrink-0">
+        <form id="chatForm" onsubmit="handleSend(event)" class="max-w-4xl mx-auto flex items-center space-x-2.5">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="userInput" 
+              placeholder="Ask about properties, pricing, locations, or follow-ups like 'what amenities does it have?'..." 
+              autocomplete="off"
+              aria-label="Real Estate AI Prompt Input"
+              class="w-full bg-estate-950/90 border border-estate-700/80 text-slate-100 placeholder-slate-500 text-sm rounded-xl pl-4 pr-10 py-3.5 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition shadow-inner font-normal"
+            />
+            <button 
+              type="button" 
+              onclick="document.getElementById('userInput').value = ''" 
+              title="Clear input"
+              aria-label="Clear input text"
+              class="absolute right-3 top-3.5 text-slate-500 hover:text-slate-300 transition"
+            >
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
           <button 
             type="submit" 
             id="sendBtn" 
-            class="bg-gradient-to-r from-gold-600 to-amber-600 hover:from-gold-500 hover:to-amber-500 text-estate-900 font-bold p-3 rounded-xl shadow-lg shadow-gold-500/10 transition flex items-center justify-center shrink-0 disabled:opacity-50"
+            aria-label="Send Message"
+            class="bg-gradient-to-r from-gold-500 via-gold-600 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-estate-950 font-bold p-3.5 rounded-xl shadow-gold-sm hover:shadow-gold-glow transition-all duration-200 flex items-center justify-center shrink-0 disabled:opacity-50"
           >
-            <i data-lucide="send" class="w-5 h-5"></i>
+            <i data-lucide="send" class="w-5 h-5 text-estate-950"></i>
           </button>
         </form>
-        <div class="text-[11px] text-slate-500 text-center mt-2">
-          Grounded with scraped public data from <a href="https://darglobal.co.uk" target="_blank" class="hover:text-gold-400 underline">DarGlobal</a> & <a href="https://wasalt.com" target="_blank" class="hover:text-gold-400 underline">Wasalt</a>. Real-time streaming via OpenRouter free tier.
+
+        <div class="flex items-center justify-between max-w-4xl mx-auto text-[11px] text-slate-500 mt-2 px-1">
+          <span>Grounded with live data from <a href="https://darglobal.co.uk" target="_blank" class="hover:text-gold-400 underline">DarGlobal</a> & <a href="https://wasalt.com" target="_blank" class="hover:text-gold-400 underline">Wasalt</a></span>
+          <span class="hidden sm:inline">Multi-turn memory & Domain-guardrailed</span>
         </div>
       </div>
     </main>
 
-    <!-- Side Drawer: Visual Property Catalog Explorer -->
-    <aside id="catalogDrawer" class="hidden md:flex flex-col w-96 border-l border-estate-750 bg-estate-850 h-full overflow-hidden transition-all duration-300 shrink-0">
-      <div class="p-4 border-b border-estate-750 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="image" class="w-4 h-4 text-gold-400"></i>
-          <h2 class="text-sm font-bold text-white">Visual Property Catalog</h2>
+    <!-- ========================================== -->
+    <!-- SLIDE DRAWER: VISUAL PROPERTY EXPLORER     -->
+    <!-- ========================================== -->
+    <aside 
+      id="catalogDrawer" 
+      class="hidden lg:flex flex-col w-96 border-l border-estate-750/80 bg-estate-900/95 backdrop-blur-xl h-full overflow-hidden transition-all duration-300 shrink-0 z-20 shadow-2xl"
+    >
+      <!-- Drawer Header -->
+      <div class="p-4 border-b border-estate-750/70 flex items-center justify-between bg-estate-850/50">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-gold-400"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white">Visual Catalog</h3>
+            <p class="text-[10px] text-slate-400">Scraped Architecture & Listings</p>
+          </div>
         </div>
-        <span class="text-xs text-slate-400" id="catalogCount">23 Listings</span>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-mono font-semibold text-gold-400 bg-estate-800 px-2 py-0.5 rounded border border-estate-750" id="catalogCount">23 Listings</span>
+          <button onclick="toggleCatalog()" class="lg:hidden text-slate-400 hover:text-white p-1" aria-label="Close catalog">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="p-3 border-b border-estate-750 bg-estate-800/40">
-        <input 
-          type="text" 
-          id="catalogSearch" 
-          oninput="filterCatalog(this.value)" 
-          placeholder="Filter by city, brand, villa, Spain, Riyadh..." 
-          class="w-full bg-estate-900 border border-estate-700 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-gold-500"
-        />
+      <!-- Drawer Search & Quick Filter -->
+      <div class="p-3 border-b border-estate-750/70 bg-estate-950/40 space-y-2">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="catalogSearch" 
+            oninput="filterCatalog(this.value)" 
+            placeholder="Search by city, brand, villa, Dubai..." 
+            aria-label="Filter catalog listings"
+            class="w-full bg-estate-900 border border-estate-700/80 text-xs rounded-lg pl-8 pr-3 py-2 text-slate-200 focus:outline-none focus:border-gold-500"
+          />
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5"></i>
+        </div>
+
+        <div class="flex items-center space-x-1.5 overflow-x-auto text-[10px]">
+          <button onclick="filterCatalogByBadge('')" class="badge-filter px-2 py-0.5 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/30 shrink-0 font-medium">All</button>
+          <button onclick="filterCatalogByBadge('DarGlobal')" class="badge-filter px-2 py-0.5 rounded-full bg-estate-800 text-slate-300 border border-estate-700 hover:border-gold-500/30 shrink-0">DarGlobal</button>
+          <button onclick="filterCatalogByBadge('Wasalt')" class="badge-filter px-2 py-0.5 rounded-full bg-estate-800 text-slate-300 border border-estate-700 hover:border-gold-500/30 shrink-0">Wasalt</button>
+          <button onclick="filterCatalogByBadge('Villa')" class="badge-filter px-2 py-0.5 rounded-full bg-estate-800 text-slate-300 border border-estate-700 hover:border-gold-500/30 shrink-0">Villas</button>
+        </div>
       </div>
 
-      <div id="catalogList" class="flex-1 overflow-y-auto p-3 space-y-4">
-        <!-- Visual cards injected here -->
+      <!-- Drawer List Items Container -->
+      <div id="catalogList" class="flex-1 overflow-y-auto p-3 space-y-3.5">
+        <!-- Injected via JavaScript -->
       </div>
     </aside>
 
   </div>
 
-  <!-- OpenRouter API Key Configuration Modal -->
-  <div id="configModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-estate-850 border border-estate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      <button onclick="closeConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+  <!-- ========================================== -->
+  <!-- OPENROUTER CONFIGURATION MODAL             -->
+  <!-- ========================================== -->
+  <div 
+    id="configModal" 
+    role="dialog" 
+    aria-modal="true" 
+    aria-label="OpenRouter Configuration"
+    class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all duration-200"
+  >
+    <div class="bg-estate-900 border border-estate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-slate-100">
+      
+      <button onclick="closeConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1" aria-label="Close configuration modal">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
       <div class="flex items-center space-x-3 mb-4">
-        <div class="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-500/30 flex items-center justify-center text-gold-400">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-500/20 to-amber-700/20 border border-gold-500/40 flex items-center justify-center text-gold-400 shadow-gold-sm">
           <i data-lucide="key" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="text-base font-bold text-white">OpenRouter API Setup</h3>
-          <p class="text-xs text-slate-400">Connect your free API key for live LLM generation</p>
+          <h3 class="text-base font-bold text-white tracking-tight">OpenRouter API Setup</h3>
+          <p class="text-xs text-slate-400">Connect your personal key for unmetered live generation</p>
         </div>
       </div>
 
-      <p class="text-xs text-slate-300 leading-relaxed mb-4">
-        Active free models like <code>nvidia/nemotron-3.5-lightning:free</code> and <code>google/gemma-4-31b-it:free</code> have $0 token cost.
-      </p>
+      <div class="p-3 rounded-xl bg-estate-950/80 border border-estate-750/70 mb-4 text-xs text-slate-300 leading-relaxed">
+        <div class="flex items-center space-x-1.5 text-gold-400 font-semibold mb-1">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i>
+          <span>Free-Tier Enabled</span>
+        </div>
+        Active free models like <code>nvidia/nemotron-3.5-lightning:free</code>, <code>google/gemma-4-31b-it:free</code>, and <code>liquid/lfm-3-1.7b:free</code> incur $0 token cost.
+      </div>
 
-      <div class="space-y-3 mb-5">
+      <div class="space-y-3.5 mb-5">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">OpenRouter Key (sk-or-v1-...)</label>
+          <label for="apiKeyInput" class="block text-xs font-semibold text-slate-300 mb-1">OpenRouter Key (sk-or-v1-...)</label>
           <input 
             type="password" 
             id="apiKeyInput" 
-            placeholder="Paste your key here..." 
-            class="w-full bg-estate-900 border border-estate-700 text-sm rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-gold-500 font-mono"
+            placeholder="Paste your OpenRouter API key..." 
+            class="w-full bg-estate-950 border border-estate-700 text-sm rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-gold-500 font-mono tracking-wider"
           />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Preferred Free Model</label>
-          <select id="modalModelSelect" class="w-full bg-estate-900 border border-estate-700 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-gold-500">
-            <option value="nvidia/nemotron-3.5-lightning:free">Nemotron 3.5 Lightning (Free)</option>
-            <option value="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free">Nemotron Omni Reasoning (Free)</option>
-            <option value="google/gemma-4-31b-it:free">Gemma 4 31B (Free)</option>
-            <option value="liquid/lfm-3-1.7b:free">Liquid LFM (Free)</option>
-            <option value="inclusionai/ling-3.2-flash:free">Ling 3.2 Flash (Free)</option>
-          </select>
         </div>
       </div>
 
-      <div class="flex items-center justify-between">
-        <button onclick="clearApiKey()" class="text-xs text-rose-400 hover:underline">Clear Stored Key</button>
+      <div class="flex items-center justify-between pt-2 border-t border-estate-800">
+        <button onclick="clearApiKey()" class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
+          Clear Key
+        </button>
         <div class="flex space-x-2">
-          <button onclick="closeConfigModal()" class="px-4 py-2 text-xs rounded-lg bg-estate-800 hover:bg-estate-750 text-slate-300">Cancel</button>
-          <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-gold-500 hover:bg-gold-400 text-estate-900">Save & Apply</button>
+          <button onclick="closeConfigModal()" class="px-4 py-2 text-xs font-medium rounded-lg bg-estate-800 hover:bg-estate-750 text-slate-300">
+            Cancel
+          </button>
+          <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-estate-950 shadow-gold-sm transition">
+            Save & Connect
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Orchestrator -->
+  <!-- Toast Notification Feedback Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-estate-850 border border-gold-500/40 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-gold-sm flex items-center space-x-2 transition transform translate-y-2">
+    <i data-lucide="check-circle" class="w-4 h-4 text-gold-400"></i>
+    <span id="toastMsg">Action completed successfully.</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- CLIENT-SIDE APPLICATION ORCHESTRATION       -->
+  <!-- ========================================== -->
   <script>
     let allProperties = [];
     let activeSourceFilter = '';
     let savedApiKey = localStorage.getItem('openrouter_api_key') || '';
-    let chatHistory = []; // Multi-turn conversational memory
+    let chatHistory = []; // Multi-turn conversational context memory
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       loadHealthAndProperties();
       updateApiKeyUI();
+
+      // Keyboard shortcut: Escape closes modal or drawer
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeConfigModal();
+        }
+      });
     });
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
 
     function updateApiKeyUI() {
       const btnText = document.getElementById('apiKeyBtnText');
       if (savedApiKey) {
-        btnText.innerText = 'Key Connected';
+        btnText.innerText = 'Key Active';
         document.getElementById('apiKeyInput').value = savedApiKey;
       } else {
-        btnText.innerText = 'Set OpenRouter Key';
+        btnText.innerText = 'OpenRouter Key';
       }
     }
 
@@ -300,7 +558,7 @@
           }
         }
       } catch (err) {
-        console.warn('Backend properties endpoint unreachable.');
+        console.warn('Backend properties endpoint unreachable in offline mode.');
       }
       document.getElementById('propCountBadge').innerText = allProperties.length;
       document.getElementById('catalogCount').innerText = `${allProperties.length} Listings`;
@@ -310,7 +568,14 @@
     function renderCatalog(items) {
       const container = document.getElementById('catalogList');
       if (!items.length) {
-        container.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">No matching properties.</div>';
+        container.innerHTML = `
+          <div class="text-center py-10 px-4">
+            <i data-lucide="search-x" class="w-8 h-8 text-slate-500 mx-auto mb-2"></i>
+            <p class="text-xs text-slate-400 font-medium">No properties match your filter.</p>
+            <button onclick="filterCatalog('')" class="mt-2 text-[11px] text-gold-400 underline">Reset Search</button>
+          </div>
+        `;
+        lucide.createIcons();
         return;
       }
 
@@ -318,25 +583,41 @@
         const isDg = p.source === 'DarGlobal';
         const badgeColor = isDg ? 'border-amber-500/40 text-amber-300 bg-amber-500/20' : 'border-emerald-500/40 text-emerald-300 bg-emerald-500/20';
         const img = p.image_url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
+        const partnerTag = p.brand_partner ? `<span class="bg-gold-500/20 text-gold-300 border border-gold-500/30 text-[9px] font-bold px-1.5 py-0.5 rounded">${p.brand_partner}</span>` : '';
+
         return `
-          <div class="rounded-xl bg-estate-900 border border-estate-750 overflow-hidden hover:border-gold-500/50 transition group shadow-md">
-            <div class="h-32 w-full relative overflow-hidden">
-              <img src="${img}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-              <div class="absolute inset-0 bg-gradient-to-t from-estate-900 via-estate-900/30 to-transparent"></div>
-              <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeColor} backdrop-blur-sm">${p.source}</span>
-              <span class="absolute bottom-2 right-2 text-xs font-bold text-gold-400 font-mono bg-estate-900/90 px-2 py-0.5 rounded backdrop-blur">${p.price}</span>
+          <div class="rounded-xl bg-estate-950/80 border border-estate-750/70 overflow-hidden hover:border-gold-500/50 transition duration-300 group shadow-md flex flex-col">
+            <div class="h-36 w-full relative overflow-hidden bg-estate-900">
+              <img src="${img}" alt="${escapeHtml(p.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+              <div class="absolute inset-0 bg-gradient-to-t from-estate-950 via-estate-950/30 to-transparent"></div>
+              
+              <div class="absolute top-2 left-2 flex items-center space-x-1">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeColor} backdrop-blur-md">${p.source}</span>
+                ${partnerTag}
+              </div>
+
+              <span class="absolute bottom-2 right-2 text-xs font-bold text-gold-400 font-mono bg-estate-950/90 px-2.5 py-0.5 rounded-md border border-gold-500/20 backdrop-blur-sm">
+                ${p.price}
+              </span>
             </div>
-            <div class="p-3">
-              <h4 class="text-xs font-bold text-white line-clamp-1 mb-1">${p.title}</h4>
-              <p class="text-[11px] text-slate-400 flex items-center space-x-1 mb-1.5">
-                <i data-lucide="map-pin" class="w-3 h-3 text-gold-500 shrink-0"></i>
-                <span class="line-clamp-1">${p.location || p.city}</span>
-              </p>
-              <p class="text-[11px] text-slate-400 line-clamp-2 mb-2.5 leading-relaxed">${p.description}</p>
-              <div class="flex items-center justify-between text-[11px] pt-2 border-t border-estate-800">
-                <span class="text-slate-500">${p.property_type}</span>
-                <a href="${p.url}" target="_blank" class="text-gold-400 hover:text-gold-300 font-semibold inline-flex items-center space-x-1">
-                  <span>View Listing</span>
+
+            <div class="p-3.5 flex-1 flex flex-col justify-between">
+              <div>
+                <h4 class="text-xs font-bold text-white line-clamp-1 mb-1 tracking-tight">${escapeHtml(p.title)}</h4>
+                <p class="text-[11px] text-slate-400 flex items-center space-x-1 mb-1.5">
+                  <i data-lucide="map-pin" class="w-3 h-3 text-gold-500 shrink-0"></i>
+                  <span class="line-clamp-1">${escapeHtml(p.location || p.city)}</span>
+                </p>
+                <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed mb-3">${escapeHtml(p.description)}</p>
+              </div>
+
+              <div class="pt-2 border-t border-estate-800/80 flex items-center justify-between text-[11px]">
+                <button onclick="askAboutProperty('${escapeHtml(p.title)}')" class="text-[11px] text-slate-300 hover:text-gold-400 font-medium flex items-center space-x-1">
+                  <i data-lucide="message-square" class="w-3 h-3 text-gold-400"></i>
+                  <span>Inquire</span>
+                </button>
+                <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="text-gold-400 hover:text-gold-300 font-semibold inline-flex items-center space-x-1">
+                  <span>Portal</span>
                   <i data-lucide="external-link" class="w-3 h-3"></i>
                 </a>
               </div>
@@ -356,6 +637,16 @@
       renderCatalog(filtered);
     }
 
+    function filterCatalogByBadge(term) {
+      document.getElementById('catalogSearch').value = term;
+      filterCatalog(term);
+    }
+
+    function askAboutProperty(title) {
+      document.getElementById('userInput').value = `Tell me all about ${title}, including its price, location, amenities, and developer portfolio background.`;
+      handleSend(new Event('submit'));
+    }
+
     function toggleCatalog() {
       const drawer = document.getElementById('catalogDrawer');
       drawer.classList.toggle('hidden');
@@ -366,9 +657,9 @@
       ['all', 'darglobal', 'wasalt'].forEach(key => {
         const btn = document.getElementById(`filter-${key}`);
         if ((key === 'all' && !src) || (key.toLowerCase() === src.toLowerCase())) {
-          btn.className = 'px-2.5 py-1 rounded-full text-xs font-medium transition bg-gold-500/20 text-gold-400 border border-gold-500/30';
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition bg-gold-500/20 text-gold-300 border border-gold-500/30';
         } else {
-          btn.className = 'px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200';
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200';
         }
       });
     }
@@ -384,6 +675,18 @@
       const firstChild = chatContainer.firstElementChild;
       chatContainer.innerHTML = '';
       if (firstChild) chatContainer.appendChild(firstChild);
+      showToast('Conversation history reset.');
+    }
+
+    function copyToClipboard(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Advisor summary copied to clipboard.');
+      }).catch(() => {
+        showToast('Unable to copy.');
+      });
     }
 
     async function handleSend(e) {
@@ -399,12 +702,12 @@
 
       // Append User Message to UI
       chatContainer.innerHTML += `
-        <div class="flex items-start justify-end space-x-3 max-w-3xl ml-auto">
-          <div class="bg-gradient-to-r from-amber-600 to-gold-600 text-estate-900 font-medium p-3.5 rounded-2xl rounded-tr-sm text-sm shadow-md">
+        <div class="flex items-start justify-end space-x-3 max-w-3xl ml-auto animate-fade-in">
+          <div class="bg-gradient-to-r from-estate-850 to-estate-800 border border-gold-500/30 text-white font-normal p-4 rounded-2xl rounded-tr-sm text-sm shadow-card-elevated max-w-xl leading-relaxed">
             ${escapeHtml(query)}
           </div>
-          <div class="w-8 h-8 rounded-full bg-gold-500 flex items-center justify-center shrink-0 mt-0.5 text-estate-900 font-bold text-xs">
-            U
+          <div class="w-9 h-9 rounded-xl bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5 text-gold-400 font-bold text-xs shadow-gold-sm">
+            <i data-lucide="user" class="w-4 h-4"></i>
           </div>
         </div>
       `;
@@ -419,15 +722,28 @@
       const metaId = 'meta-' + msgId;
 
       chatContainer.innerHTML += `
-        <div id="${msgId}" class="flex items-start space-x-3 max-w-3xl">
-          <div class="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
-            <i data-lucide="bot" class="w-4 h-4 text-gold-400"></i>
+        <div id="${msgId}" class="flex items-start space-x-3.5 max-w-3xl animate-fade-in">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-gold-400/30 via-gold-500/20 to-amber-700/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5 shadow-gold-sm">
+            <i data-lucide="crown" class="w-4 h-4 text-gold-400"></i>
           </div>
-          <div class="bg-estate-800/90 border border-estate-750 p-4 rounded-2xl rounded-tl-sm text-slate-200 shadow-lg text-sm leading-relaxed w-full">
-            <div id="${proseId}" class="prose prose-invert max-w-none text-xs sm:text-sm"><span class="cursor-pulse"></span></div>
+          <div class="bg-estate-900/90 border border-estate-750/80 p-5 rounded-2xl rounded-tl-sm text-slate-200 shadow-card-elevated text-sm leading-relaxed w-full">
+            
+            <!-- Real-time Prose Output -->
+            <div id="${proseId}" class="prose max-w-none text-xs sm:text-sm"><span class="cursor-pulse"></span></div>
+            
+            <!-- Matched Visual Property Cards -->
             <div id="${sourcesId}" class="mt-4 hidden"></div>
-            <div id="${metaId}" class="mt-3 text-[10px] text-slate-500 flex items-center justify-between">
-              <span id="model-label-${msgId}">Connecting...</span>
+            
+            <!-- Assistant Footer & Actions -->
+            <div id="${metaId}" class="mt-3 pt-3 border-t border-estate-800/80 text-[11px] text-slate-500 flex items-center justify-between">
+              <span id="model-label-${msgId}" class="flex items-center space-x-1 text-slate-400">
+                <i data-lucide="cpu" class="w-3 h-3 text-gold-400"></i>
+                <span>Connecting to OpenRouter...</span>
+              </span>
+              <button onclick="copyToClipboard('${proseId}')" title="Copy response" class="hover:text-gold-400 flex items-center space-x-1 text-slate-400 transition">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>Copy</span>
+              </button>
             </div>
           </div>
         </div>
@@ -452,7 +768,7 @@
       };
 
       try {
-        // SSE Real-time Streaming
+        // SSE Real-time Streaming Request
         const response = await fetch('/api/chat/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -460,7 +776,7 @@
         });
 
         if (!response.ok || !response.body) {
-          throw new Error('Streaming connection failed, falling back to standard');
+          throw new Error('Streaming connection failed, falling back to standard REST API.');
         }
 
         const reader = response.body.getReader();
@@ -483,7 +799,7 @@
                 if (chunk.type === 'meta' && chunk.sources && !renderedSources) {
                   renderSourcesUI(chunk.sources, sourcesEl);
                   renderedSources = true;
-                  if (chunk.model) modelLabelEl.innerText = `Model: ${chunk.model}`;
+                  if (chunk.model) modelLabelEl.innerHTML = `<i data-lucide="cpu" class="w-3 h-3 text-gold-400"></i><span>${chunk.model}</span>`;
                 }
 
                 if (chunk.type === 'token') {
@@ -493,7 +809,7 @@
                 }
 
                 if (chunk.type === 'done') {
-                  if (chunk.model) modelLabelEl.innerText = `Model: ${chunk.model}`;
+                  if (chunk.model) modelLabelEl.innerHTML = `<i data-lucide="cpu" class="w-3 h-3 text-gold-400"></i><span>${chunk.model}</span>`;
                   try { reader.cancel(); } catch(e){}
                   break;
                 }
@@ -517,7 +833,7 @@
           const data = await res.json();
           proseEl.innerHTML = marked.parse(data.reply || '');
           if (data.sources) renderSourcesUI(data.sources, sourcesEl);
-          modelLabelEl.innerText = `Model: ${data.model_used || selectedModel}`;
+          modelLabelEl.innerHTML = `<i data-lucide="cpu" class="w-3 h-3 text-gold-400"></i><span>${data.model_used || selectedModel}</span>`;
           chatHistory.push({ role: 'assistant', content: data.reply || '' });
           lucide.createIcons();
         } catch (err) {
@@ -530,27 +846,27 @@
       if (!sources || !sources.length) return;
       container.classList.remove('hidden');
       container.innerHTML = `
-        <div class="pt-3 border-t border-estate-750">
-          <div class="text-[11px] font-bold text-gold-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+        <div class="pt-3 border-t border-estate-800/80">
+          <div class="text-[11px] font-bold text-gold-400 uppercase tracking-wider mb-2.5 flex items-center space-x-1.5">
             <i data-lucide="bookmark-check" class="w-3.5 h-3.5"></i>
-            <span>Referenced Developer Properties (${sources.length})</span>
+            <span>Verified Developer Properties Grounding (${sources.length})</span>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             ${sources.map(s => {
               const img = s.image_url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
               return `
-                <div class="flex items-center space-x-3 p-2 rounded-xl bg-estate-900 border border-estate-750 hover:border-gold-500/40 transition group">
-                  <img src="${img}" alt="${s.title}" class="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
+                <div class="flex items-center space-x-3 p-2.5 rounded-xl bg-estate-950/90 border border-estate-750/70 hover:border-gold-500/40 transition group shadow-sm">
+                  <img src="${img}" alt="${escapeHtml(s.title)}" class="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between text-[10px] mb-0.5">
                       <span class="font-bold text-gold-400">${s.source}</span>
-                      <span class="font-mono font-bold text-slate-300">${s.price}</span>
+                      <span class="font-mono font-bold text-slate-200">${s.price}</span>
                     </div>
-                    <a href="${s.url}" target="_blank" class="font-semibold text-white text-xs hover:text-gold-300 line-clamp-1 flex items-center space-x-1">
-                      <span>${s.title}</span>
+                    <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white text-xs hover:text-gold-300 line-clamp-1 flex items-center space-x-1">
+                      <span>${escapeHtml(s.title)}</span>
                       <i data-lucide="external-link" class="w-3 h-3 text-gold-400 shrink-0"></i>
                     </a>
-                    <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${s.location || s.city}</p>
+                    <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${escapeHtml(s.location || s.city)}</p>
                   </div>
                 </div>
               `;
@@ -583,6 +899,7 @@
         });
       }
       closeConfigModal();
+      showToast('API Key saved and connected successfully.');
     }
 
     function clearApiKey() {
@@ -591,11 +908,13 @@
       document.getElementById('apiKeyInput').value = '';
       updateApiKeyUI();
       closeConfigModal();
+      showToast('API Key cleared.');
     }
 
     function escapeHtml(text) {
+      if (!text) return '';
       const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-      return text.replace(/[&<>"']/g, m => map[m]);
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
     }
   </script>
 </body>
