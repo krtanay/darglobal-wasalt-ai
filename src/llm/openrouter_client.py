@@ -10,13 +10,32 @@ import urllib.request
 import urllib.error
 from typing import List, Dict, Any, Tuple, Optional
 
-# Curated list of high-performance free models on OpenRouter
+def load_env(filepath: str = ".env"):
+    """Lightweight zero-dependency .env loader."""
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+        except Exception:
+            pass
+
+load_env()
+
+# Curated list of verified active free models on OpenRouter
 OPENROUTER_FREE_MODELS = [
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "google/gemini-2.0-flash-exp:free",
-    "deepseek/deepseek-r1:free",
-    "qwen/qwen-2.5-72b-instruct:free",
-    "mistralai/mistral-7b-instruct:free"
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "liquid/lfm-3-1.7b:free",
+    "inclusionai/ling-3.2-flash:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free"
 ]
 
 class OpenRouterRealEstateAdvisor:
