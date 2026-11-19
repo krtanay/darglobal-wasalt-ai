@@ -28,13 +28,11 @@ def load_env(filepath: str = ".env"):
 
 load_env()
 
-# Curated list of verified active free models on OpenRouter
+# Curated list of verified active free models on OpenRouter, prioritized by lowest latency
 OPENROUTER_FREE_MODELS = [
     "nvidia/nemotron-3.5-lightning:free",
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-    "liquid/lfm-3-1.7b:free",
     "inclusionai/ling-3.2-flash:free",
-    "google/gemma-4-31b-it:free",
+    "liquid/lfm-3-1.7b:free",
     "google/gemma-4-26b-a4b-it:free"
 ]
 
@@ -108,14 +106,13 @@ class OpenRouterRealEstateAdvisor:
 
         context_text = "\n\n".join(context_blocks)
         system_prompt = (
-            "You are a sophisticated, bilingual Real Estate AI Advisor representing DarGlobal (ultra-luxury international "
+            "You are a concise, sophisticated Real Estate AI Advisor representing DarGlobal (ultra-luxury international "
             "developments) and Wasalt (Saudi Arabia's premier PropTech marketplace).\n"
             "Guidelines:\n"
-            "1. Answer the user's inquiry professionally, highlighting relevant properties from the provided context.\n"
+            "1. Be direct, crisp, and concise (under 150 words). Bullet points for key features.\n"
             "2. Always cite property names, exact prices, locations, and clickable markdown URLs.\n"
-            "3. If the user asks follow-up questions (e.g. 'what is its price?', 'how many bedrooms?'), use the ongoing conversation context.\n"
-            "4. If comparing DarGlobal and Wasalt, contrast DarGlobal's international branded lifestyle with Wasalt's prime Saudi residential opportunities.\n"
-            "5. Base your answers strictly on the supplied real estate context. Do not invent properties or prices."
+            "3. If the user asks follow-up questions, use the conversation context.\n"
+            "4. Base answers strictly on the supplied real estate context. Do not invent properties or prices."
         )
 
         messages = [{"role": "system", "content": system_prompt}]
@@ -160,7 +157,9 @@ class OpenRouterRealEstateAdvisor:
                 payload = {
                     "model": model,
                     "messages": messages,
-                    "temperature": 0.35
+                    "temperature": 0.3,
+                    "max_tokens": 300,
+                    "reasoning": {"max_tokens": 0}
                 }
 
                 req = urllib.request.Request(
@@ -176,8 +175,10 @@ class OpenRouterRealEstateAdvisor:
 
                 with urllib.request.urlopen(req, timeout=20) as response:
                     res_data = json.loads(response.read().decode("utf-8"))
-                    text = res_data["choices"][0]["message"]["content"]
-                    return text, model, retrieved_properties
+                    msg_obj = res_data["choices"][0]["message"]
+                    text = msg_obj.get("content") or msg_obj.get("reasoning") or ""
+                    if text:
+                        return text, model, retrieved_properties
 
             except urllib.error.HTTPError as e:
                 err_msg = e.read().decode("utf-8", errors="ignore")
@@ -233,7 +234,9 @@ class OpenRouterRealEstateAdvisor:
                 payload = {
                     "model": model,
                     "messages": messages,
-                    "temperature": 0.35,
+                    "temperature": 0.3,
+                    "max_tokens": 300,
+                    "reasoning": {"max_tokens": 0},
                     "stream": True
                 }
 

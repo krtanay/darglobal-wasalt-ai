@@ -11,14 +11,25 @@ import urllib.parse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from typing import Dict, Any
 
+import socket
 from src.rag.search_engine import HybridRealEstateRAG
 from src.llm.openrouter_client import OpenRouterRealEstateAdvisor, OPENROUTER_FREE_MODELS
 
-# Global Instances
+# Global Instances & In-Memory Response Cache for instant repeated queries
 rag_engine = HybridRealEstateRAG(data_path="data/properties.json")
 advisor = OpenRouterRealEstateAdvisor()
+RESPONSE_CACHE: Dict[str, Dict[str, Any]] = {}
 
 class RealEstateRequestHandler(SimpleHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
+    def setup(self):
+        super().setup()
+        try:
+            self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        except Exception:
+            pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory="public", **kwargs)
 
@@ -161,7 +172,7 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
+            self.send_header("Connection", "close")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
 
@@ -177,6 +188,8 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
                     self.wfile.flush()
                 except Exception:
                     pass
+            finally:
+                self.close_connection = True
             return
 
         elif path == "/api/config":

@@ -494,6 +494,8 @@
 
                 if (chunk.type === 'done') {
                   if (chunk.model) modelLabelEl.innerText = `Model: ${chunk.model}`;
+                  try { reader.cancel(); } catch(e){}
+                  break;
                 }
               } catch (parseErr) {}
             }
