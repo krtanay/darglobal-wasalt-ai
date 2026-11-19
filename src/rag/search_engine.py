@@ -9,6 +9,20 @@ import math
 import re
 from typing import List, Dict, Any, Optional
 
+ENGLISH_STOPWORDS = {
+    "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are",
+    "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by",
+    "can", "cannot", "could", "did", "do", "does", "doing", "down", "during", "each",
+    "few", "for", "from", "further", "had", "has", "have", "having", "he", "her", "here",
+    "him", "his", "how", "i", "if", "in", "into", "is", "it", "its", "itself",
+    "me", "more", "most", "my", "no", "nor", "not", "of", "off", "on", "once", "only", "or",
+    "other", "our", "ours", "out", "over", "own", "same", "she", "should", "so",
+    "some", "such", "than", "that", "the", "their", "theirs", "them", "then", "there",
+    "these", "they", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was",
+    "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "with",
+    "would", "you", "your", "yours", "need", "built"
+}
+
 class HybridRealEstateRAG:
     def __init__(self, data_path: str = "data/properties.json"):
         self.data_path = data_path
@@ -21,9 +35,12 @@ class HybridRealEstateRAG:
         self.avg_dl: float = 0.0
         self.load_and_index()
 
-    def tokenize(self, text: str) -> List[str]:
+    def tokenize(self, text: str, remove_stopwords: bool = True) -> List[str]:
         tokens = re.findall(r'\b[a-zA-Z0-9_\u0600-\u06FF\-]+\b', text.lower())
-        return [t for t in tokens if len(t) > 1 or t.isdigit()]
+        valid = [t for t in tokens if len(t) > 1 or t.isdigit()]
+        if remove_stopwords:
+            return [t for t in valid if t not in ENGLISH_STOPWORDS]
+        return valid
 
     def extract_ngrams(self, text: str, n_range=(3, 5)) -> List[str]:
         """Character n-grams for dense subword semantic representation."""
@@ -211,8 +228,19 @@ class HybridRealEstateRAG:
         semantic_scores.sort(key=lambda x: x[1], reverse=True)
         semantic_ranks = {item[0]: rank + 1 for rank, item in enumerate(semantic_scores)}
 
-        # --- C. Reciprocal Rank Fusion (RRF) ---
-        # RRF Score = 1 / (60 + r_bm25) + 1 / (60 + r_dense)
+        # Check relevance: if neither BM25 nor semantic match detected anything, it's out-of-domain
+        max_bm25 = max((s[1] for s in bm25_scores), default=0.0)
+        max_semantic = max((s[1] for s in semantic_scores), default=0.0)
+
+        # Broad browse keywords that should return properties even without specific filters
+        broad_triggers = ["all", "browse", "list", "properties", "catalog", "portfolio", "recommend", "show me", "available"]
+        is_broad_query = any(bt in q_lower for bt in broad_triggers)
+
+        if max_bm25 <= 0.0 and max_semantic < 0.08 and not is_broad_query:
+            # Query is completely unrelated to real estate (e.g. research papers, coding, etc.)
+            return []
+
+        # Reciprocal Rank Fusion (RRF)
         rrf_constant = 60.0
         fused_scores = []
         for idx in bm25_ranks:
@@ -223,11 +251,6 @@ class HybridRealEstateRAG:
 
         fused_scores.sort(key=lambda x: x[0], reverse=True)
         results = [item[1] for item in fused_scores[:top_k]]
-
-        if not results:
-            filtered = [p for p in self.properties if (not source_filter or p.get("source") == source_filter)]
-            results = filtered[:top_k] if filtered else self.properties[:top_k]
-
         return results
 
 if __name__ == "__main__":

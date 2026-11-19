@@ -53,10 +53,13 @@ class LangChainRealEstateRAGPipeline:
             # 1. Prompt Template
             prompt = ChatPromptTemplate.from_messages([
                 ("system", 
-                 "You are an expert Real Estate Advisor representing DarGlobal (ultra-luxury international "
-                 "branded properties) and Wasalt (Saudi Arabia's premier real estate marketplace).\n"
-                 "Answer the inquiry based on the retrieved real estate context below. Always cite property "
-                 "names, locations, exact prices, and URLs.\n\n"
+                 "You are a dedicated AI Real Estate Consultant exclusively representing DarGlobal (ultra-luxury international "
+                 "branded properties) and Wasalt (Saudi Arabia's licensed real estate marketplace).\n\n"
+                 "STRICT DOMAIN GUARDRAILS:\n"
+                 "1. You ONLY answer inquiries regarding real estate, properties, locations, amenities, and architecture.\n"
+                 "2. If the user asks about ANY unrelated topic (e.g. machine learning, research papers, coding, science, general knowledge), "
+                 "you MUST POLITELY REFUSE and state that your expertise is strictly limited to DarGlobal and Wasalt real estate.\n"
+                 "3. Answer concisely based on the retrieved real estate context below. Always cite property names, exact prices, and URLs.\n\n"
                  "Real Estate Context:\n{context}"),
                 ("human", "{question}")
             ])
