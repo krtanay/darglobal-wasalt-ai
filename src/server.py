@@ -1,6 +1,6 @@
 """
 Production Real Estate AI Chatbot Server
-Exposes REST API endpoints and serves the modern luxury frontend interface.
+Exposes REST and SSE Streaming API endpoints and serves the modern luxury frontend interface.
 Built using standard library Python HTTP server for zero-dependency execution anywhere.
 """
 
@@ -20,7 +20,6 @@ advisor = OpenRouterRealEstateAdvisor()
 
 class RealEstateRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        # Base directory for static files
         super().__init__(*args, directory="public", **kwargs)
 
     def _send_json(self, status: int, data: Dict[str, Any]):
@@ -79,12 +78,10 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
             return
 
         elif path == "/" or path == "/index.html":
-            # Serve public/index.html
             self.path = "/index.html"
             return super().do_GET()
 
         else:
-            # Fallback to static files
             return super().do_GET()
 
     def do_POST(self):
@@ -100,6 +97,7 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
             self._send_json(400, {"error": "Invalid JSON payload"})
             return
 
+        # 1. Non-streaming Chat Endpoint
         if path == "/api/chat":
             user_message = data.get("message", "").strip()
             if not user_message:
@@ -109,16 +107,25 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
             model = data.get("model")
             source_filter = data.get("source_filter")
             api_key_override = data.get("api_key")
+            history = data.get("history") or data.get("messages")
 
-            # Allow runtime key override from UI
             if api_key_override:
                 advisor.set_api_key(api_key_override)
 
-            # 1. RAG Search
-            top_properties = rag_engine.search(user_message, top_k=4, source_filter=source_filter)
+            # RAG Search with Conversational Query Expansion & RRF
+            top_properties = rag_engine.search(
+                user_message,
+                top_k=4,
+                source_filter=source_filter,
+                history=history
+            )
 
-            # 2. OpenRouter Chat Completion
-            reply, model_used, sources = advisor.chat(user_message, top_properties, model_override=model)
+            reply, model_used, sources = advisor.chat(
+                user_message,
+                top_properties,
+                model_override=model,
+                history=history
+            )
 
             self._send_json(200, {
                 "reply": reply,
@@ -126,6 +133,50 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
                 "sources": sources,
                 "query": user_message
             })
+            return
+
+        # 2. Real-Time Server-Sent Events (SSE) Streaming Endpoint
+        elif path == "/api/chat/stream":
+            user_message = data.get("message", "").strip()
+            if not user_message:
+                self._send_json(400, {"error": "Field 'message' is required."})
+                return
+
+            model = data.get("model")
+            source_filter = data.get("source_filter")
+            api_key_override = data.get("api_key")
+            history = data.get("history") or data.get("messages")
+
+            if api_key_override:
+                advisor.set_api_key(api_key_override)
+
+            top_properties = rag_engine.search(
+                user_message,
+                top_k=4,
+                source_filter=source_filter,
+                history=history
+            )
+
+            # Initiate SSE Stream
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+
+            try:
+                for chunk in advisor.chat_stream(user_message, top_properties, model_override=model, history=history):
+                    payload = f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
+                    self.wfile.write(payload.encode("utf-8"))
+                    self.wfile.flush()
+            except Exception as e:
+                err_payload = f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"
+                try:
+                    self.wfile.write(err_payload.encode("utf-8"))
+                    self.wfile.flush()
+                except Exception:
+                    pass
             return
 
         elif path == "/api/config":
@@ -148,6 +199,7 @@ def run_server(port: int = 8080):
     print(f"   Indexed Properties: {len(rag_engine.properties)}")
     print(f"   Listening on: http://localhost:{port}")
     print(f"   Health check: http://localhost:{port}/api/health")
+    print(f"   SSE Streaming: http://localhost:{port}/api/chat/stream")
     print(f"================================================================")
     try:
         server.serve_forever()

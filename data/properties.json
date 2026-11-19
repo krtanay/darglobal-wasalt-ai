@@ -26,7 +26,8 @@
       "Private Elevator"
     ],
     "url": "https://darglobal.co.uk/tierra-viva/",
-    "status": "Off-Plan / Under Construction"
+    "status": "Off-Plan / Under Construction",
+    "image_url": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-marea-missoni",
@@ -55,7 +56,8 @@
       "24hr Concierge"
     ],
     "url": "https://darglobal.co.uk/marea/",
-    "status": "Under Construction"
+    "status": "Under Construction",
+    "image_url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-davinci-tower",
@@ -84,7 +86,8 @@
       "Helipad Access"
     ],
     "url": "https://darglobal.co.uk/davinci-tower/",
-    "status": "Handover Impending"
+    "status": "Handover Impending",
+    "image_url": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-dg1-businessbay",
@@ -112,7 +115,8 @@
       "EV Charging Stations"
     ],
     "url": "https://darglobal.co.uk/dg1/",
-    "status": "Off-Plan"
+    "status": "Off-Plan",
+    "image_url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-the-astera-aston-martin",
@@ -141,7 +145,8 @@
       "Spa & Wellness Suites"
     ],
     "url": "https://darglobal.co.uk/the-astera/",
-    "status": "Off-Plan Launch"
+    "status": "Off-Plan Launch",
+    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-trump-tower-dubai",
@@ -170,7 +175,8 @@
       "Private Boardrooms"
     ],
     "url": "https://darglobal.co.uk/trump-tower-dubai/",
-    "status": "Upcoming Landmark Project"
+    "status": "Upcoming Landmark Project",
+    "image_url": "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-aida-trump-cliff-villas",
@@ -198,7 +204,8 @@
       "Helipad Access"
     ],
     "url": "https://darglobal.co.uk/aida/",
-    "status": "Under Construction"
+    "status": "Under Construction",
+    "image_url": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-aida-fairway-villas",
@@ -226,7 +233,8 @@
       "Community Lagoon"
     ],
     "url": "https://darglobal.co.uk/aida-fairway/",
-    "status": "Off-Plan"
+    "status": "Off-Plan",
+    "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-les-vagues-elie-saab",
@@ -254,7 +262,8 @@
       "Fitness Club"
     ],
     "url": "https://darglobal.co.uk/les-vagues/",
-    "status": "Under Construction"
+    "status": "Under Construction",
+    "image_url": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-trump-wadi-safar",
@@ -282,7 +291,8 @@
       "Butler Quarters"
     ],
     "url": "https://darglobal.co.uk/wadi-safar-trump/",
-    "status": "Prime Private Release"
+    "status": "Prime Private Release",
+    "image_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-fendi-wadi-safar",
@@ -309,7 +319,8 @@
       "Lush Landscaped Courtyards"
     ],
     "url": "https://darglobal.co.uk/fendi-wadi-safar/",
-    "status": "Exclusive Off-Plan"
+    "status": "Exclusive Off-Plan",
+    "image_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-urban-oasis-missoni",
@@ -336,7 +347,8 @@
       "Waterfront Boardwalk"
     ],
     "url": "https://darglobal.co.uk/urban-oasis/",
-    "status": "Ready / Handover Completed"
+    "status": "Ready / Handover Completed",
+    "image_url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "dg-the-mulliner-london",
@@ -363,7 +375,8 @@
       "Direct Lift Access"
     ],
     "url": "https://darglobal.co.uk/the-mulliner/",
-    "status": "Exclusive Luxury Collection"
+    "status": "Exclusive Luxury Collection",
+    "image_url": "https://images.unsplash.com/photo-1541971875076-8f970d573be6?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-narjis-villa-01",
@@ -391,7 +404,8 @@
       "Covered Car Garage"
     ],
     "url": "https://wasalt.com/en/property/villa-for-sale-al-narjis-riyadh",
-    "status": "Ready for Handover / REGA Licensed"
+    "status": "Ready for Handover / REGA Licensed",
+    "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-yasmin-villa-02",
@@ -419,7 +433,8 @@
       "Thermal Insulation Certified"
     ],
     "url": "https://wasalt.com/en/property/villa-for-sale-al-yasmin-riyadh",
-    "status": "Active Listing"
+    "status": "Active Listing",
+    "image_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-sedra-community-03",
@@ -447,7 +462,8 @@
       "Salmani Architecture"
     ],
     "url": "https://wasalt.com/en/projects/sedra-riyadh",
-    "status": "Off-Plan / Handover 2026"
+    "status": "Off-Plan / Handover 2026",
+    "image_url": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-malqa-apt-04",
@@ -475,7 +491,8 @@
       "CCTV Surveillance"
     ],
     "url": "https://wasalt.com/en/property/apartment-for-sale-al-malqa-riyadh",
-    "status": "Ready to Move"
+    "status": "Ready to Move",
+    "image_url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-arid-duplex-05",
@@ -502,7 +519,8 @@
       "Close to New Airport Zone"
     ],
     "url": "https://wasalt.com/en/property/duplex-for-sale-al-arid-riyadh",
-    "status": "Active Listing"
+    "status": "Active Listing",
+    "image_url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-hittin-palace-06",
@@ -530,7 +548,8 @@
       "Rooftop Terrace with Boulevard Views"
     ],
     "url": "https://wasalt.com/en/property/villa-for-sale-hittin-riyadh",
-    "status": "Exclusive Wasalt Showcase"
+    "status": "Exclusive Wasalt Showcase",
+    "image_url": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-shati-villa-07",
@@ -558,7 +577,8 @@
       "Guard Room"
     ],
     "url": "https://wasalt.com/en/property/villa-for-sale-ash-shati-jeddah",
-    "status": "Active Listing"
+    "status": "Active Listing",
+    "image_url": "https://images.unsplash.com/photo-1584738766473-61c083514bf4?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-salamah-apt-08",
@@ -585,7 +605,8 @@
       "Water & Electricity Meter Separate"
     ],
     "url": "https://wasalt.com/en/property/apartment-for-sale-al-salamah-jeddah",
-    "status": "Ready to Move"
+    "status": "Ready to Move",
+    "image_url": "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-khobar-corniche-09",
@@ -613,7 +634,8 @@
       "24/7 Security"
     ],
     "url": "https://wasalt.com/en/property/apartment-for-sale-al-khobar-corniche",
-    "status": "Active Listing"
+    "status": "Active Listing",
+    "image_url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"
   },
   {
     "id": "ws-dammam-waha-10",
@@ -640,6 +662,7 @@
       "Rooftop Terrace"
     ],
     "url": "https://wasalt.com/en/property/villa-for-sale-al-waha-dammam",
-    "status": "Ready for Immediate Occupancy"
+    "status": "Ready for Immediate Occupancy",
+    "image_url": "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=800&q=80"
   }
 ]

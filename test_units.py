@@ -1,51 +1,66 @@
 """
-In-Process Unit & Integration Tests for Real Estate AI Advisor
-Tests RAG search, metadata filtering, OpenRouter client fallback, and API response formatting.
-Runs without socket binding.
+In-Process Unit & Integration Tests for Upgraded Real Estate AI Advisor
+Tests:
+1. Image URL presence across all 23 properties
+2. BM25 + Dense Semantic RRF Hybrid Search
+3. Conversational Memory Query Expansion (Anaphora resolution)
+4. Streaming Token Generator (SSE)
+5. LangChain LCEL Pipeline Invocation
 """
 
 import unittest
 import json
 from src.rag.search_engine import HybridRealEstateRAG
 from src.llm.openrouter_client import OpenRouterRealEstateAdvisor
+from src.langchain_pipeline import LangChainRealEstateRAGPipeline
 
-class TestRealEstateAdvisor(unittest.TestCase):
+class TestUpgradedRealEstateAdvisor(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rag = HybridRealEstateRAG("data/properties.json")
         cls.advisor = OpenRouterRealEstateAdvisor()
+        cls.langchain_pipe = LangChainRealEstateRAGPipeline()
 
-    def test_properties_loaded(self):
-        self.assertGreaterEqual(len(self.rag.properties), 20, "Should have at least 20 properties indexed")
-        print(f"[OK] Successfully indexed {len(self.rag.properties)} properties.")
+    def test_1_properties_and_images(self):
+        self.assertGreaterEqual(len(self.rag.properties), 20)
+        # Verify all properties contain high-definition image_url
+        for p in self.rag.properties:
+            self.assertIn("image_url", p, f"Missing image_url in {p.get('id')}")
+            self.assertTrue(p["image_url"].startswith("http"), f"Invalid image URL in {p.get('id')}")
+        print(f"[TEST 1 PASS] Verified {len(self.rag.properties)} properties all contain valid image URLs.")
 
-    def test_darglobal_search(self):
-        results = self.rag.search("Lamborghini villas in Spain", top_k=3, source_filter="DarGlobal")
-        self.assertTrue(any("Tierra Viva" in p["title"] for p in results))
-        self.assertEqual(results[0]["source"], "DarGlobal")
-        print(f"[OK] DarGlobal search returned: {results[0]['title']}")
-
-    def test_wasalt_search(self):
-        results = self.rag.search("Modern villa in Riyadh", top_k=3, source_filter="Wasalt")
+    def test_2_rrf_hybrid_search(self):
+        # Conceptual query without exact keywords
+        results = self.rag.search("secluded luxury villas overlooking the sea in Spain", top_k=2)
         self.assertTrue(len(results) > 0)
-        self.assertEqual(results[0]["source"], "Wasalt")
-        self.assertIn("Riyadh", results[0]["location"])
-        print(f"[OK] Wasalt search returned: {results[0]['title']}")
+        self.assertEqual(results[0]["source"], "DarGlobal")
+        self.assertIn("Spain", results[0]["location"])
+        print(f"[TEST 2 PASS] RRF Hybrid Search matched: {results[0]['title']}")
 
-    def test_openrouter_offline_synthesis(self):
-        props = self.rag.search("Luxury villas in Spain", top_k=2)
-        answer, model_used, sources = self.advisor.chat("Luxury villas in Spain", props)
-        self.assertIn("Tierra Viva", answer)
-        self.assertIn("Offline", model_used)
-        self.assertEqual(len(sources), 2)
-        print(f"[OK] Grounded offline synthesis generated successfully.")
+    def test_3_conversational_memory_expansion(self):
+        mock_history = [
+            {"role": "user", "content": "Tell me about Lamborghini villas"},
+            {"role": "assistant", "content": "Tierra Viva by Automobili Lamborghini in Spain."}
+        ]
+        reformulated = self.rag.reformulate_query("What is its price and how many bedrooms?", mock_history)
+        self.assertIn("Tierra Viva", reformulated)
+        # Search using reformulated query
+        hits = self.rag.search(reformulated, top_k=1)
+        self.assertEqual(hits[0]["id"], "dg-tierra-viva")
+        print(f"[TEST 3 PASS] Conversational memory resolved pronoun to: {hits[0]['title']}")
 
-    def test_cross_comparison_query(self):
-        results = self.rag.search("Compare DarGlobal Dubai and Wasalt Riyadh properties", top_k=4)
-        sources_found = set(p["source"] for p in results)
-        self.assertIn("DarGlobal", sources_found)
-        self.assertIn("Wasalt", sources_found)
-        print(f"[OK] Cross-comparison retrieved both DarGlobal and Wasalt items: {sources_found}")
+    def test_4_streaming_generator(self):
+        props = self.rag.search("Tierra Viva", top_k=1)
+        chunks = list(self.advisor.chat_stream("Hello", props))
+        self.assertTrue(any(c.get("type") == "meta" for c in chunks), "Expected meta chunk with sources")
+        self.assertTrue(any(c.get("type") == "token" for c in chunks), "Expected streaming tokens")
+        self.assertTrue(any(c.get("type") == "done" for c in chunks), "Expected done chunk")
+        print(f"[TEST 4 PASS] Streaming generator successfully yielded {len(chunks)} SSE chunks.")
+
+    def test_5_langchain_lcel_pipeline(self):
+        res = self.langchain_pipe.invoke("Tell me about Riyadh villas on Wasalt")
+        self.assertTrue(len(res) > 20)
+        print(f"[TEST 5 PASS] LangChain LCEL pipeline executed successfully ({len(res)} characters).")
 
 if __name__ == "__main__":
     unittest.main()

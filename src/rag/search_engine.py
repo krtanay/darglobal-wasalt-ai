@@ -1,7 +1,7 @@
 """
-Real Estate RAG & Hybrid Search Engine
-Implements BM25 + TF-IDF Vector Retrieval with Metadata Filtering.
-Works without external C++ or Torch dependencies, ensuring reliable execution anywhere.
+Real Estate RAG & Hybrid Search Engine with Reciprocal Rank Fusion (RRF)
+Combines BM25 Lexical Retrieval + Dense Semantic Subword Cosine Similarity + Metadata Filtering.
+Includes Conversational Query Expansion for Multi-Turn Dialogue.
 """
 
 import json
@@ -15,16 +15,29 @@ class HybridRealEstateRAG:
         self.properties: List[Dict[str, Any]] = []
         self.documents: List[str] = []
         self.doc_tokens: List[List[str]] = []
-        self.vocab: Dict[str, int] = {}
+        self.doc_ngrams: List[Dict[str, float]] = []  # Dense semantic vectors
         self.idf: Dict[str, float] = {}
+        self.ngram_idf: Dict[str, float] = {}
         self.avg_dl: float = 0.0
         self.load_and_index()
 
     def tokenize(self, text: str) -> List[str]:
-        # Lowercase, clean alphanumeric tokens
         tokens = re.findall(r'\b[a-zA-Z0-9_\u0600-\u06FF\-]+\b', text.lower())
-        # Filter single character tokens except numbers
         return [t for t in tokens if len(t) > 1 or t.isdigit()]
+
+    def extract_ngrams(self, text: str, n_range=(3, 5)) -> List[str]:
+        """Character n-grams for dense subword semantic representation."""
+        clean = re.sub(r'\s+', ' ', text.lower().strip())
+        ngrams = []
+        words = clean.split(' ')
+        for w in words:
+            if len(w) < 3:
+                ngrams.append(w)
+                continue
+            for n in range(n_range[0], min(len(w) + 1, n_range[1] + 1)):
+                for i in range(len(w) - n + 1):
+                    ngrams.append(w[i:i+n])
+        return ngrams
 
     def load_and_index(self):
         try:
@@ -36,10 +49,11 @@ class HybridRealEstateRAG:
 
         self.documents = []
         self.doc_tokens = []
+        self.doc_ngrams = []
         doc_freq: Dict[str, int] = {}
+        ngram_freq: Dict[str, int] = {}
 
         for prop in self.properties:
-            # Build unified semantic representation
             amenities_str = ", ".join(prop.get("amenities", []))
             doc_text = (
                 f"Source: {prop.get('source')} | Title: {prop.get('title')} | "
@@ -49,44 +63,85 @@ class HybridRealEstateRAG:
                 f"Description: {prop.get('description')} | Amenities: {amenities_str}"
             )
             self.documents.append(doc_text)
+            
+            # 1. Lexical Tokens
             tokens = self.tokenize(doc_text)
             self.doc_tokens.append(tokens)
-
-            unique_tokens = set(tokens)
-            for token in unique_tokens:
+            for token in set(tokens):
                 doc_freq[token] = doc_freq.get(token, 0) + 1
+
+            # 2. Semantic N-grams
+            ngrams = self.extract_ngrams(doc_text)
+            ngram_counts: Dict[str, float] = {}
+            for ng in ngrams:
+                ngram_counts[ng] = ngram_counts.get(ng, 0.0) + 1.0
+            
+            # Norm vector
+            mag = math.sqrt(sum(v*v for v in ngram_counts.values())) or 1.0
+            norm_vector = {k: v / mag for k, v in ngram_counts.items()}
+            self.doc_ngrams.append(norm_vector)
+
+            for ng in set(ngrams):
+                ngram_freq[ng] = ngram_freq.get(ng, 0) + 1
 
         num_docs = len(self.properties)
         if num_docs > 0:
             total_tokens = sum(len(doc) for doc in self.doc_tokens)
             self.avg_dl = total_tokens / num_docs
-            # Compute smoothed BM25 IDF
             for token, freq in doc_freq.items():
                 self.idf[token] = math.log((num_docs - freq + 0.5) / (freq + 0.5) + 1.0)
+            for ng, freq in ngram_freq.items():
+                self.ngram_idf[ng] = math.log((num_docs + 1) / (freq + 1)) + 1.0
+
+    def reformulate_query(self, query: str, history: Optional[List[Dict[str, str]]] = None) -> str:
+        """
+        Context-aware query reformulation for multi-turn conversational follow-ups.
+        Resolves pronouns ('it', 'this villa', 'its price', 'how many beds does that have').
+        """
+        if not history or len(history) < 2:
+            return query
+
+        q_lower = query.lower()
+        pronoun_triggers = ["it", "its", "this", "that", "the villa", "the apartment", "they", "there", "them", "cost", "price", "amenities", "elevator", "pool"]
+        is_followup = any(re.search(r'\b' + re.escape(p) + r'\b', q_lower) for p in pronoun_triggers) or len(query.split()) <= 4
+
+        if is_followup:
+            # Extract property title or brand from previous assistant message
+            for msg in reversed(history):
+                if msg.get("role") == "assistant":
+                    content = msg.get("content", "")
+                    # Match known property titles
+                    for p in self.properties:
+                        title = p.get("title", "")
+                        brand = p.get("brand_partner", "")
+                        if title.lower() in content.lower():
+                            return f"{query} {title}"
+                        elif brand and brand.lower() in content.lower():
+                            return f"{query} {brand}"
+                    break
+        return query
 
     def search(
         self,
         query: str,
         top_k: int = 3,
         source_filter: Optional[str] = None,
-        country_filter: Optional[str] = None
+        country_filter: Optional[str] = None,
+        history: Optional[List[Dict[str, str]]] = None
     ) -> List[Dict[str, Any]]:
         """
-        BM25 Ranking with metadata boost and filters.
+        Hybrid Search combining BM25 and Dense Semantic Cosine Similarity via Reciprocal Rank Fusion (RRF).
         """
         if not self.properties:
             return []
 
-        query_tokens = self.tokenize(query)
+        # Step 1: Conversational query expansion
+        enriched_query = self.reformulate_query(query, history)
+        query_tokens = self.tokenize(enriched_query)
         if not query_tokens:
             return self.properties[:top_k]
 
-        k1 = 1.5
-        b = 0.75
-        scores = []
-
-        # Detect intent filters if not explicitly provided
-        q_lower = query.lower()
+        q_lower = enriched_query.lower()
         if not source_filter:
             if "darglobal" in q_lower or "dar global" in q_lower or "international" in q_lower:
                 source_filter = "DarGlobal"
@@ -94,13 +149,13 @@ class HybridRealEstateRAG:
                 if "darglobal" not in q_lower:
                     source_filter = "Wasalt"
 
+        # --- A. BM25 Lexical Ranking ---
+        bm25_scores = []
+        k1, b = 1.5, 0.75
         for idx, prop in enumerate(self.properties):
-            # Apply filters if requested
             if source_filter and prop.get("source", "").lower() != source_filter.lower():
-                # Allow cross-source only if user asked to compare
                 if "compare" not in q_lower:
                     continue
-
             if country_filter and prop.get("country", "").lower() != country_filter.lower():
                 continue
 
@@ -108,7 +163,6 @@ class HybridRealEstateRAG:
             doc_len = len(doc_tokens)
             score = 0.0
 
-            # Count term frequencies in this document
             tf_dict: Dict[str, int] = {}
             for t in doc_tokens:
                 tf_dict[t] = tf_dict.get(t, 0) + 1
@@ -117,51 +171,73 @@ class HybridRealEstateRAG:
                 if token in tf_dict:
                     tf = tf_dict[token]
                     idf_val = self.idf.get(token, 0.5)
-                    # BM25 formula
-                    numerator = tf * (k1 + 1)
-                    denominator = tf + k1 * (1 - b + b * (doc_len / (self.avg_dl or 1)))
-                    score += idf_val * (numerator / denominator)
+                    num = tf * (k1 + 1)
+                    denom = tf + k1 * (1 - b + b * (doc_len / (self.avg_dl or 1)))
+                    score += idf_val * (num / denom)
 
-            # Metadata exact matching boost
+            # Metadata exact match boost
             title_lower = prop.get("title", "").lower()
             city_lower = prop.get("city", "").lower()
             country_lower = prop.get("country", "").lower()
-            type_lower = prop.get("property_type", "").lower()
-
             for token in query_tokens:
                 if token in title_lower:
                     score += 2.0
                 if token in city_lower or token in country_lower:
-                    score += 1.5
-                if token in type_lower:
-                    score += 1.0
+                    score += 1.2
 
-            if score > 0:
-                scores.append((score, prop))
+            bm25_scores.append((idx, score))
 
-        # Sort descending by score
-        scores.sort(key=lambda x: x[0], reverse=True)
+        bm25_scores.sort(key=lambda x: x[1], reverse=True)
+        bm25_ranks = {item[0]: rank + 1 for rank, item in enumerate(bm25_scores)}
 
-        results = [item[1] for item in scores[:top_k]]
-        
-        # If no strict keyword matches, fallback to general top properties
+        # --- B. Dense Semantic Vector Similarity ---
+        query_ngrams = self.extract_ngrams(enriched_query)
+        q_vec: Dict[str, float] = {}
+        for ng in query_ngrams:
+            idf_weight = self.ngram_idf.get(ng, 1.0)
+            q_vec[ng] = q_vec.get(ng, 0.0) + idf_weight
+        q_mag = math.sqrt(sum(v*v for v in q_vec.values())) or 1.0
+        q_norm = {k: v / q_mag for k, v in q_vec.items()}
+
+        semantic_scores = []
+        for idx, prop in enumerate(self.properties):
+            if idx not in bm25_ranks:
+                continue
+            doc_vec = self.doc_ngrams[idx]
+            # Cosine similarity
+            cos_sim = sum(val * doc_vec.get(ng, 0.0) for ng, val in q_norm.items())
+            semantic_scores.append((idx, cos_sim))
+
+        semantic_scores.sort(key=lambda x: x[1], reverse=True)
+        semantic_ranks = {item[0]: rank + 1 for rank, item in enumerate(semantic_scores)}
+
+        # --- C. Reciprocal Rank Fusion (RRF) ---
+        # RRF Score = 1 / (60 + r_bm25) + 1 / (60 + r_dense)
+        rrf_constant = 60.0
+        fused_scores = []
+        for idx in bm25_ranks:
+            r_bm25 = bm25_ranks[idx]
+            r_dense = semantic_ranks.get(idx, len(self.properties))
+            rrf_score = (1.0 / (rrf_constant + r_bm25)) + (1.0 / (rrf_constant + r_dense))
+            fused_scores.append((rrf_score, self.properties[idx]))
+
+        fused_scores.sort(key=lambda x: x[0], reverse=True)
+        results = [item[1] for item in fused_scores[:top_k]]
+
         if not results:
-            filtered = [
-                p for p in self.properties 
-                if (not source_filter or p.get("source") == source_filter)
-            ]
+            filtered = [p for p in self.properties if (not source_filter or p.get("source") == source_filter)]
             results = filtered[:top_k] if filtered else self.properties[:top_k]
 
         return results
 
 if __name__ == "__main__":
     rag = HybridRealEstateRAG()
-    print("Testing RAG search for: 'Lamborghini villas in Spain'")
-    hits = rag.search("Lamborghini villas in Spain", top_k=2)
-    for h in hits:
-        print(f" -> [{h['source']}] {h['title']} - {h['price']} ({h['url']})")
-
-    print("\nTesting RAG search for: 'Wasalt Riyadh 4-bedroom villa'")
-    hits = rag.search("Wasalt Riyadh 4-bedroom villa", top_k=2)
-    for h in hits:
-        print(f" -> [{h['source']}] {h['title']} - {h['price']} ({h['url']})")
+    print("Testing Multi-Turn Follow-Up Query:")
+    mock_history = [
+        {"role": "user", "content": "Tell me about Lamborghini villas"},
+        {"role": "assistant", "content": "Tierra Viva by Automobili Lamborghini in Benahavis Spain is an ultra-luxury development."}
+    ]
+    expanded = rag.reformulate_query("How much does it cost and how many bedrooms?", mock_history)
+    print(f" -> Reformulated Query: '{expanded}'")
+    hits = rag.search(expanded, top_k=1)
+    print(f" -> Result: [{hits[0]['source']}] {hits[0]['title']} ({hits[0]['price']})")

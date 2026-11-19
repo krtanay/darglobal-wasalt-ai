@@ -1,14 +1,14 @@
 """
-OpenRouter Client for Free LLM Models
-Handles API interactions with openrouter.ai/api/v1/chat/completions,
-automatic failover across free models, and smart context synthesis.
+OpenRouter Client for Free LLM Models with Multi-Turn Memory & Real-Time Streaming
+Handles SSE streaming, conversation history, model failovers, and grounded offline synthesis.
 """
 
 import os
 import json
+import time
 import urllib.request
 import urllib.error
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Generator
 
 def load_env(filepath: str = ".env"):
     """Lightweight zero-dependency .env loader."""
@@ -48,8 +48,7 @@ class OpenRouterRealEstateAdvisor:
 
     def generate_grounded_fallback(self, query: str, properties: List[Dict[str, Any]]) -> str:
         """
-        Grounded response generator used when API key is not yet configured,
-        ensuring 100% immediate testability for junior evaluation and demos.
+        Grounded response generator used when API key is not yet configured.
         """
         if not properties:
             return (
@@ -81,26 +80,16 @@ class OpenRouterRealEstateAdvisor:
             lines.append(f"- 🔗 **Official Listing:** [Explore Project Page]({p.get('url')})\n")
 
         lines.append(
-            "\n> 💡 *Tip: Connect your free OpenRouter API key in the top bar to enable live generative inference with Llama 3.3 / Gemini 2.0 Flash.*"
+            "\n> 💡 *Tip: Connect your free OpenRouter API key in the top bar to enable live generative inference with Nemotron / Gemma.*"
         )
         return "\n".join(lines)
 
-    def chat(
+    def _build_context_and_messages(
         self,
         query: str,
         retrieved_properties: List[Dict[str, Any]],
-        model_override: Optional[str] = None
-    ) -> Tuple[str, str, List[Dict[str, Any]]]:
-        """
-        Generates response using OpenRouter free models with failover.
-        Returns: (response_text, model_used, source_properties)
-        """
-        # If no API key is provided, return rich grounded synthesis
-        if not self.api_key:
-            answer = self.generate_grounded_fallback(query, retrieved_properties)
-            return answer, "RAG Knowledge Synthesizer (Offline Mode)", retrieved_properties
-
-        # Build context from retrieved properties
+        history: Optional[List[Dict[str, str]]] = None
+    ) -> Tuple[str, List[Dict[str, str]]]:
         context_blocks = []
         for p in retrieved_properties:
             amenities = ", ".join(p.get("amenities", []))
@@ -118,20 +107,48 @@ class OpenRouterRealEstateAdvisor:
             context_blocks.append(block)
 
         context_text = "\n\n".join(context_blocks)
-
         system_prompt = (
             "You are a sophisticated, bilingual Real Estate AI Advisor representing DarGlobal (ultra-luxury international "
             "developments) and Wasalt (Saudi Arabia's premier PropTech marketplace).\n"
             "Guidelines:\n"
             "1. Answer the user's inquiry professionally, highlighting relevant properties from the provided context.\n"
             "2. Always cite property names, exact prices, locations, and clickable markdown URLs.\n"
-            "3. If comparing DarGlobal and Wasalt, contrast DarGlobal's international branded lifestyle with Wasalt's prime Saudi residential opportunities.\n"
-            "4. Base your answers strictly on the supplied real estate context. Do not invent properties or prices."
+            "3. If the user asks follow-up questions (e.g. 'what is its price?', 'how many bedrooms?'), use the ongoing conversation context.\n"
+            "4. If comparing DarGlobal and Wasalt, contrast DarGlobal's international branded lifestyle with Wasalt's prime Saudi residential opportunities.\n"
+            "5. Base your answers strictly on the supplied real estate context. Do not invent properties or prices."
         )
 
-        user_content = f"Real Estate Context:\n{context_text}\n\nClient Inquiry: {query}"
+        messages = [{"role": "system", "content": system_prompt}]
 
-        # Try models in priority sequence with failover
+        # Inject conversation history for multi-turn conversational memory
+        if history:
+            for turn in history[-6:]:
+                role = turn.get("role")
+                content = turn.get("content", "")
+                if role in ("user", "assistant") and content and content != query:
+                    messages.append({"role": role, "content": content})
+
+        user_content = f"Real Estate Context:\n{context_text}\n\nClient Inquiry: {query}"
+        messages.append({"role": "user", "content": user_content})
+
+        return system_prompt, messages
+
+    def chat(
+        self,
+        query: str,
+        retrieved_properties: List[Dict[str, Any]],
+        model_override: Optional[str] = None,
+        history: Optional[List[Dict[str, str]]] = None
+    ) -> Tuple[str, str, List[Dict[str, Any]]]:
+        """
+        Generates response using OpenRouter free models with failover and conversation memory.
+        """
+        if not self.api_key:
+            answer = self.generate_grounded_fallback(query, retrieved_properties)
+            return answer, "RAG Knowledge Synthesizer (Offline Mode)", retrieved_properties
+
+        _, messages = self._build_context_and_messages(query, retrieved_properties, history)
+
         models_to_try = [model_override] if model_override else []
         for m in OPENROUTER_FREE_MODELS:
             if m not in models_to_try:
@@ -142,11 +159,8 @@ class OpenRouterRealEstateAdvisor:
             try:
                 payload = {
                     "model": model,
-                    "messages": [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_content}
-                    ],
-                    "temperature": 0.4
+                    "messages": messages,
+                    "temperature": 0.35
                 }
 
                 req = urllib.request.Request(
@@ -167,35 +181,110 @@ class OpenRouterRealEstateAdvisor:
 
             except urllib.error.HTTPError as e:
                 err_msg = e.read().decode("utf-8", errors="ignore")
-                print(f"[OpenRouter] Model {model} returned HTTP {e.code}: {err_msg}")
                 last_error = f"HTTP {e.code}: {err_msg}"
-                # If rate-limited (429) or model temporarily unavailable, continue to next model
-                if e.code in (429, 502, 503, 504):
+                if e.code in (429, 502, 503, 504, 404):
                     continue
                 else:
                     break
             except Exception as e:
-                print(f"[OpenRouter] Model {model} request failed: {e}")
                 last_error = str(e)
                 continue
 
-        # If all live API attempts fail, fallback to grounded synthesis with diagnostic
         fallback = self.generate_grounded_fallback(query, retrieved_properties)
         diagnostic = f"\n\n*(Note: Live OpenRouter call encountered: {last_error}. Switched to local RAG fallback.)*"
         return fallback + diagnostic, "RAG Knowledge Synthesizer (Fallback)", retrieved_properties
 
-if __name__ == "__main__":
-    advisor = OpenRouterRealEstateAdvisor()
-    test_props = [
-        {
-            "title": "Tierra Viva by Lamborghini",
-            "source": "DarGlobal",
-            "price": "EUR 9,296,000",
-            "location": "Benahavis, Spain",
-            "property_type": "Luxury Villa",
-            "description": "53 villas inspired by Lamborghini.",
-            "url": "https://darglobal.co.uk/tierra-viva/"
+    def chat_stream(
+        self,
+        query: str,
+        retrieved_properties: List[Dict[str, Any]],
+        model_override: Optional[str] = None,
+        history: Optional[List[Dict[str, str]]] = None
+    ) -> Generator[Dict[str, Any], None, None]:
+        """
+        Server-Sent Events (SSE) streaming generator.
+        Yields chunk dictionaries: {'token': '...', 'model': '...', 'done': bool, 'sources': [...]}
+        """
+        # Yield metadata first (sources)
+        yield {
+            "type": "meta",
+            "sources": retrieved_properties,
+            "model": model_override or self.default_model
         }
-    ]
-    resp, model, _ = advisor.chat("Tell me about Lamborghini villas", test_props)
-    print(f"Generated via: {model}\n\n{resp}")
+
+        if not self.api_key:
+            # Yield offline synthesis word by word with micro-delay
+            fallback = self.generate_grounded_fallback(query, retrieved_properties)
+            words = fallback.split(" ")
+            for w in words:
+                yield {"type": "token", "token": w + " "}
+                time.sleep(0.015)
+            yield {"type": "done", "model": "RAG Knowledge Synthesizer (Offline)"}
+            return
+
+        _, messages = self._build_context_and_messages(query, retrieved_properties, history)
+        models_to_try = [model_override] if model_override else []
+        for m in OPENROUTER_FREE_MODELS:
+            if m not in models_to_try:
+                models_to_try.append(m)
+
+        for model in models_to_try:
+            try:
+                payload = {
+                    "model": model,
+                    "messages": messages,
+                    "temperature": 0.35,
+                    "stream": True
+                }
+
+                req = urllib.request.Request(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "https://github.com/darglobal-wasalt-ai",
+                        "X-Title": "DarGlobal & Wasalt Real Estate AI"
+                    }
+                )
+
+                with urllib.request.urlopen(req, timeout=25) as response:
+                    for line in response:
+                        line_str = line.decode("utf-8").strip()
+                        if not line_str or line_str.startswith(":"):
+                            continue
+                        if line_str.startswith("data: "):
+                            data_content = line_str[6:].strip()
+                            if data_content == "[DONE]":
+                                break
+                            try:
+                                chunk_json = json.loads(data_content)
+                                delta = chunk_json.get("choices", [{}])[0].get("delta", {})
+                                token = delta.get("content", "")
+                                if token:
+                                    yield {"type": "token", "token": token, "model": model}
+                            except Exception:
+                                continue
+                    yield {"type": "done", "model": model}
+                    return
+
+            except Exception as e:
+                print(f"[Streaming Failover] Model {model} failed: {e}")
+                continue
+
+        # If streaming failed across all models, fallback
+        fallback = self.generate_grounded_fallback(query, retrieved_properties)
+        words = fallback.split(" ")
+        for w in words:
+            yield {"type": "token", "token": w + " "}
+            time.sleep(0.01)
+        yield {"type": "done", "model": "RAG Knowledge Synthesizer (Fallback)"}
+
+if __name__ == "__main__":
+    adv = OpenRouterRealEstateAdvisor()
+    test_p = [{"title": "Tierra Viva", "source": "DarGlobal", "price": "EUR 9.2M", "location": "Spain", "description": "Lamborghini villa", "url": "https://darglobal.co.uk"}]
+    print("Testing streaming token generator:")
+    for chunk in adv.chat_stream("Hello, tell me about Tierra Viva", test_p):
+        if chunk.get("type") == "token":
+            print(chunk.get("token"), end="", flush=True)
+    print("\n[Done Streaming Test]")
