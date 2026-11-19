@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  real-estate-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: darglobal-wasalt-ai-bot
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    restart: unless-stopped

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DarGlobal & Wasalt Real Estate AI Advisor</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              400: '#f5d77f',
+              500: '#d4af37',
+              600: '#aa8c2c',
+              700: '#80681e'
+            },
+            estate: {
+              900: '#0b0f17',
+              850: '#111827',
+              800: '#161f30',
+              750: '#1e293b',
+              700: '#334155'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f17; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    
+    .prose a { color: #f5d77f; text-decoration: underline; }
+    .prose h3, .prose h4 { color: #f8fafc; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+    .prose p { margin-bottom: 0.5rem; }
+    .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+    .prose blockquote { border-left: 3px solid #d4af37; padding-left: 0.75rem; font-style: italic; color: #94a3b8; }
+  </style>
+</head>
+<body class="bg-estate-900 text-slate-100 flex flex-col h-screen font-sans overflow-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-estate-750 bg-estate-850/90 backdrop-blur px-4 py-3 flex items-center justify-between z-20">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-500 to-amber-700 flex items-center justify-center shadow-lg shadow-gold-500/10">
+        <i data-lucide="building-2" class="w-5 h-5 text-estate-900"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-base font-bold tracking-tight text-white">DarGlobal <span class="text-gold-500">×</span> Wasalt</h1>
+          <span class="text-[10px] uppercase font-bold tracking-wider bg-gold-500/10 text-gold-400 border border-gold-500/30 px-2 py-0.5 rounded-full">AI Advisor</span>
+        </div>
+        <p class="text-xs text-slate-400 hidden sm:block">Ultra-Luxury International Branded Residences & Saudi PropTech Marketplace</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Model Selector -->
+      <div class="relative hidden md:block">
+        <select id="modelSelect" class="bg-estate-800 text-xs border border-estate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-gold-500">
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Free)</option>
+          <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+          <option value="deepseek/deepseek-r1:free">DeepSeek R1 (Free)</option>
+          <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (Free)</option>
+        </select>
+      </div>
+
+      <!-- Catalog Toggle Button -->
+      <button onclick="toggleCatalog()" class="text-xs flex items-center space-x-1.5 bg-estate-800 hover:bg-estate-750 border border-estate-700 px-3 py-1.5 rounded-lg transition text-slate-300">
+        <i data-lucide="layers" class="w-3.5 h-3.5 text-gold-400"></i>
+        <span class="hidden sm:inline">Database</span>
+        <span id="propCountBadge" class="bg-estate-700 text-gold-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">23</span>
+      </button>
+
+      <!-- API Key Modal Button -->
+      <button onclick="openConfigModal()" class="text-xs flex items-center space-x-1.5 bg-gradient-to-r from-gold-600 to-amber-600 hover:from-gold-500 hover:to-amber-500 text-estate-900 font-semibold px-3 py-1.5 rounded-lg shadow transition">
+        <i data-lucide="key" class="w-3.5 h-3.5"></i>
+        <span id="apiKeyBtnText">OpenRouter Key</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="flex flex-1 overflow-hidden relative">
+
+    <!-- Chat Column -->
+    <main class="flex-1 flex flex-col h-full bg-estate-900 overflow-hidden relative">
+      
+      <!-- Source Filter Pill Tabs -->
+      <div class="px-4 py-2 border-b border-estate-800/80 bg-estate-850/40 flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="text-slate-400">Scope:</span>
+          <button onclick="setSourceFilter('')" id="filter-all" class="px-2.5 py-1 rounded-full text-xs font-medium transition bg-gold-500/20 text-gold-400 border border-gold-500/30">All Sources</button>
+          <button onclick="setSourceFilter('DarGlobal')" id="filter-darglobal" class="px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200">DarGlobal (Luxury)</button>
+          <button onclick="setSourceFilter('Wasalt')" id="filter-wasalt" class="px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200">Wasalt (Saudi Arabia)</button>
+        </div>
+        <div id="connectionStatus" class="hidden sm:flex items-center space-x-1.5 text-emerald-400 text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>RAG Hybrid Search Active</span>
+        </div>
+      </div>
+
+      <!-- Chat Messages Scroll Container -->
+      <div id="chatContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+        
+        <!-- Welcome Message -->
+        <div class="flex items-start space-x-3 max-w-3xl">
+          <div class="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="bot" class="w-4 h-4 text-gold-400"></i>
+          </div>
+          <div class="bg-estate-800/90 border border-estate-750 p-4 rounded-2xl rounded-tl-sm text-slate-200 shadow-lg text-sm leading-relaxed">
+            <p class="font-semibold text-white mb-2">Welcome to the DarGlobal & Wasalt Real Estate AI Consultant.</p>
+            <p class="text-slate-300 mb-3">
+              I provide grounded real estate guidance across:
+            </p>
+            <ul class="space-y-1 mb-3 text-slate-300">
+              <li>✨ <strong>DarGlobal Portfolio:</strong> International branded luxury in Dubai, Spain, Oman, Qatar, and London (Lamborghini, Missoni, Aston Martin, Trump).</li>
+              <li>🇸🇦 <strong>Wasalt Platform:</strong> Licensed Saudi properties, villas, townhouses, and master developments in Riyadh, Jeddah, and Al-Khobar.</li>
+            </ul>
+            <p class="text-xs text-gold-400/90">Click any prompt below or type your custom inquiry:</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Conversation Items will be appended here -->
+      </div>
+
+      <!-- Quick Prompt Suggestion Chips -->
+      <div class="px-4 py-2 bg-estate-850/40 border-t border-estate-800/60 overflow-x-auto flex space-x-2 shrink-0">
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+          Show me luxury branded residences in Dubai by DarGlobal
+        </button>
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+          What villas are available in Riyadh on Wasalt under 4M SAR?
+        </button>
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+          Tell me about the Tierra Viva Lamborghini villas in Spain
+        </button>
+        <button onclick="usePrompt(this.innerText)" class="shrink-0 text-xs bg-estate-800 hover:bg-estate-750 hover:border-gold-500/50 border border-estate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+          Compare DarGlobal luxury projects with Wasalt Saudi developments
+        </button>
+      </div>
+
+      <!-- Input Bar Form -->
+      <div class="p-4 bg-estate-850 border-t border-estate-750 shrink-0">
+        <form id="chatForm" onsubmit="handleSend(event)" class="max-w-4xl mx-auto flex items-center space-x-2">
+          <input 
+            type="text" 
+            id="userInput" 
+            placeholder="Ask about properties, pricing, locations, or luxury brands..." 
+            autocomplete="off"
+            class="flex-1 bg-estate-900 border border-estate-700 text-slate-100 placeholder-slate-500 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition shadow-inner"
+          />
+          <button 
+            type="submit" 
+            id="sendBtn" 
+            class="bg-gradient-to-r from-gold-600 to-amber-600 hover:from-gold-500 hover:to-amber-500 text-estate-900 font-bold p-3 rounded-xl shadow-lg shadow-gold-500/10 transition flex items-center justify-center shrink-0 disabled:opacity-50"
+          >
+            <i data-lucide="send" class="w-5 h-5"></i>
+          </button>
+        </form>
+        <div class="text-[11px] text-slate-500 text-center mt-2">
+          Grounded with scraped public data from <a href="https://darglobal.co.uk" target="_blank" class="hover:text-gold-400 underline">DarGlobal</a> & <a href="https://wasalt.com" target="_blank" class="hover:text-gold-400 underline">Wasalt</a>. Powered by OpenRouter free-tier LLMs.
+        </div>
+      </div>
+    </main>
+
+    <!-- Side Drawer: Scraped Property Catalog Explorer -->
+    <aside id="catalogDrawer" class="hidden md:flex flex-col w-96 border-l border-estate-750 bg-estate-850 h-full overflow-hidden transition-all duration-300 shrink-0">
+      <div class="p-4 border-b border-estate-750 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="database" class="w-4 h-4 text-gold-400"></i>
+          <h2 class="text-sm font-bold text-white">Indexed Properties</h2>
+        </div>
+        <span class="text-xs text-slate-400" id="catalogCount">23 Listings</span>
+      </div>
+
+      <div class="p-3 border-b border-estate-750 bg-estate-800/40">
+        <input 
+          type="text" 
+          id="catalogSearch" 
+          oninput="filterCatalog(this.value)" 
+          placeholder="Filter catalog by city, brand, villa..." 
+          class="w-full bg-estate-900 border border-estate-700 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-gold-500"
+        />
+      </div>
+
+      <div id="catalogList" class="flex-1 overflow-y-auto p-3 space-y-3">
+        <!-- Rendered property items will be injected here -->
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- OpenRouter API Key Configuration Modal -->
+  <div id="configModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-estate-850 border border-estate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-500/30 flex items-center justify-center text-gold-400">
+          <i data-lucide="key" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">OpenRouter API Setup</h3>
+          <p class="text-xs text-slate-400">Connect your free API key for live LLM generation</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed mb-4">
+        Get your free API key at <a href="https://openrouter.ai/settings/keys" target="_blank" class="text-gold-400 underline font-semibold">openrouter.ai</a>.
+        Free-tier models like <code>meta-llama/llama-3.3-70b-instruct:free</code> and <code>google/gemini-2.0-flash-exp:free</code> cost $0.
+      </p>
+
+      <div class="space-y-3 mb-5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">OpenRouter Key (sk-or-v1-...)</label>
+          <input 
+            type="password" 
+            id="apiKeyInput" 
+            placeholder="Paste your key here..." 
+            class="w-full bg-estate-900 border border-estate-700 text-sm rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-gold-500 font-mono"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Preferred Free Model</label>
+          <select id="modalModelSelect" class="w-full bg-estate-900 border border-estate-700 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-gold-500">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B Instruct (Free)</option>
+            <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+            <option value="deepseek/deepseek-r1:free">DeepSeek R1 (Free)</option>
+            <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B Instruct (Free)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button onclick="clearApiKey()" class="text-xs text-rose-400 hover:underline">Clear Stored Key</button>
+        <div class="flex space-x-2">
+          <button onclick="closeConfigModal()" class="px-4 py-2 text-xs rounded-lg bg-estate-800 hover:bg-estate-750 text-slate-300">Cancel</button>
+          <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-gold-500 hover:bg-gold-400 text-estate-900">Save & Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Orchestrator -->
+  <script>
+    let activeSourceFilter = '';
+    let allProperties = [];
+    let savedApiKey = localStorage.getItem('openrouter_api_key') || '';
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadHealthAndProperties();
+      updateApiKeyUI();
+    });
+
+    function updateApiKeyUI() {
+      const btnText = document.getElementById('apiKeyBtnText');
+      if (savedApiKey) {
+        btnText.innerText = 'Key Connected';
+        document.getElementById('apiKeyInput').value = savedApiKey;
+      } else {
+        btnText.innerText = 'Set OpenRouter Key';
+      }
+    }
+
+    async function loadHealthAndProperties() {
+      try {
+        const res = await fetch('/api/properties');
+        const data = await res.json();
+        allProperties = data.properties || [];
+        document.getElementById('propCountBadge').innerText = allProperties.length;
+        document.getElementById('catalogCount').innerText = `${allProperties.length} Listings`;
+        renderCatalog(allProperties);
+      } catch (err) {
+        console.error('Failed to load properties:', err);
+      }
+    }
+
+    function renderCatalog(items) {
+      const container = document.getElementById('catalogList');
+      if (!items.length) {
+        container.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">No matching properties.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map(p => {
+        const isDg = p.source === 'DarGlobal';
+        const badgeColor = isDg ? 'border-amber-500/30 text-amber-400 bg-amber-500/10' : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+        return `
+          <div class="p-3 rounded-xl bg-estate-900/90 border border-estate-750 hover:border-gold-500/40 transition">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeColor}">${p.source}</span>
+              <span class="text-[11px] font-bold text-gold-400 font-mono">${p.price}</span>
+            </div>
+            <h4 class="text-xs font-semibold text-white line-clamp-1 mb-1">${p.title}</h4>
+            <p class="text-[11px] text-slate-400 flex items-center space-x-1 mb-1.5">
+              <i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline"></i>
+              <span>${p.location || p.city}</span>
+            </p>
+            <p class="text-[11px] text-slate-400 line-clamp-2 mb-2 leading-relaxed">${p.description}</p>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">${p.property_type}</span>
+              <a href="${p.url}" target="_blank" class="text-gold-400 hover:text-gold-300 font-medium inline-flex items-center space-x-1">
+                <span>View</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function filterCatalog(term) {
+      const q = term.toLowerCase().trim();
+      const filtered = allProperties.filter(p => {
+        const str = `${p.title} ${p.location} ${p.city} ${p.country} ${p.property_type} ${p.brand_partner || ''} ${p.description}`.toLowerCase();
+        return str.includes(q);
+      });
+      renderCatalog(filtered);
+    }
+
+    function toggleCatalog() {
+      const drawer = document.getElementById('catalogDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function setSourceFilter(src) {
+      activeSourceFilter = src;
+      ['all', 'darglobal', 'wasalt'].forEach(key => {
+        const btn = document.getElementById(`filter-${key}`);
+        if ((key === 'all' && !src) || (key.toLowerCase() === src.toLowerCase())) {
+          btn.className = 'px-2.5 py-1 rounded-full text-xs font-medium transition bg-gold-500/20 text-gold-400 border border-gold-500/30';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-full text-xs font-medium transition text-slate-400 hover:text-slate-200';
+        }
+      });
+    }
+
+    function usePrompt(text) {
+      document.getElementById('userInput').value = text;
+      handleSend(new Event('submit'));
+    }
+
+    async function handleSend(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('userInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = '';
+      input.blur();
+
+      const chatContainer = document.getElementById('chatContainer');
+
+      // Append User Message
+      chatContainer.innerHTML += `
+        <div class="flex items-start justify-end space-x-3 max-w-3xl ml-auto">
+          <div class="bg-gradient-to-r from-amber-600 to-gold-600 text-estate-900 font-medium p-3.5 rounded-2xl rounded-tr-sm text-sm shadow-md">
+            ${escapeHtml(query)}
+          </div>
+          <div class="w-8 h-8 rounded-full bg-gold-500 flex items-center justify-center shrink-0 mt-0.5 text-estate-900 font-bold text-xs">
+            U
+          </div>
+        </div>
+      `;
+
+      // Append Loading Indicator
+      const loadingId = 'loading-' + Date.now();
+      chatContainer.innerHTML += `
+        <div id="${loadingId}" class="flex items-start space-x-3 max-w-3xl">
+          <div class="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="bot" class="w-4 h-4 text-gold-400 animate-spin"></i>
+          </div>
+          <div class="bg-estate-800 border border-estate-750 p-4 rounded-2xl rounded-tl-sm text-slate-400 text-xs flex items-center space-x-2">
+            <span class="animate-pulse">Searching RAG knowledge base & generating response...</span>
+          </div>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      lucide.createIcons();
+
+      const selectedModel = document.getElementById('modelSelect').value;
+
+      try {
+        const payload = {
+          message: query,
+          model: selectedModel,
+          source_filter: activeSourceFilter || null,
+          api_key: savedApiKey || null
+        };
+
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        document.getElementById(loadingId)?.remove();
+
+        if (data.error) {
+          chatContainer.innerHTML += `
+            <div class="flex items-start space-x-3 max-w-3xl">
+              <div class="bg-rose-900/30 border border-rose-700/50 text-rose-300 p-4 rounded-2xl text-xs">
+                Error: ${data.error}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // Render AI Answer Markdown
+        const renderedHtml = marked.parse(data.reply || '');
+        let sourcesHtml = '';
+
+        if (data.sources && data.sources.length) {
+          sourcesHtml = `
+            <div class="mt-4 pt-3 border-t border-estate-700/80">
+              <div class="text-[11px] font-bold text-gold-400 uppercase tracking-wider mb-2 flex items-center space-x-1">
+                <i data-lucide="bookmark-check" class="w-3.5 h-3.5"></i>
+                <span>Referenced Developer Properties (${data.sources.length})</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                ${data.sources.map(s => `
+                  <div class="p-2.5 rounded-lg bg-estate-900/80 border border-estate-750 text-xs hover:border-gold-500/40 transition">
+                    <div class="flex items-center justify-between text-[10px] mb-1">
+                      <span class="font-bold text-slate-300">${s.source}</span>
+                      <span class="font-bold text-gold-400 font-mono">${s.price}</span>
+                    </div>
+                    <a href="${s.url}" target="_blank" class="font-semibold text-white hover:text-gold-300 line-clamp-1 flex items-center space-x-1">
+                      <span>${s.title}</span>
+                      <i data-lucide="external-link" class="w-3 h-3 text-gold-400 shrink-0"></i>
+                    </a>
+                    <span class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${s.location || s.city}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        chatContainer.innerHTML += `
+          <div class="flex items-start space-x-3 max-w-3xl">
+            <div class="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="bot" class="w-4 h-4 text-gold-400"></i>
+            </div>
+            <div class="bg-estate-800/90 border border-estate-750 p-4 rounded-2xl rounded-tl-sm text-slate-200 shadow-lg text-sm leading-relaxed w-full">
+              <div class="prose prose-invert max-w-none text-xs sm:text-sm">
+                ${renderedHtml}
+              </div>
+              ${sourcesHtml}
+              <div class="mt-3 text-[10px] text-slate-500 flex items-center justify-between">
+                <span>Model: ${data.model_used}</span>
+                <button onclick="navigator.clipboard.writeText(\`${escapeQuotes(data.reply)}\`)" class="hover:text-slate-300 flex items-center space-x-1">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        lucide.createIcons();
+
+      } catch (err) {
+        document.getElementById(loadingId)?.remove();
+        chatContainer.innerHTML += `
+          <div class="flex items-start space-x-3 max-w-3xl">
+            <div class="bg-rose-900/30 border border-rose-700/50 text-rose-300 p-4 rounded-2xl text-xs">
+              Communication error: ${err.message}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function openConfigModal() {
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+
+    async function saveApiKey() {
+      const val = document.getElementById('apiKeyInput').value.trim();
+      savedApiKey = val;
+      localStorage.setItem('openrouter_api_key', val);
+      updateApiKeyUI();
+      
+      // Update on server
+      if (val) {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ api_key: val })
+        });
+      }
+      closeConfigModal();
+    }
+
+    function clearApiKey() {
+      savedApiKey = '';
+      localStorage.removeItem('openrouter_api_key');
+      document.getElementById('apiKeyInput').value = '';
+      updateApiKeyUI();
+      closeConfigModal();
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function escapeQuotes(text) {
+      return text.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    }
+  </script>
+</body>
+</html>
