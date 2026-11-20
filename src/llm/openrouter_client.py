@@ -48,13 +48,43 @@ class OpenRouterRealEstateAdvisor:
         """
         Grounded response generator used when API key is not yet configured.
         """
+        q_lower = query.lower()
+
+        # 1. Meta inquiries about the AI model, system, or developer
+        meta_keywords = ["which ai", "what ai", "what model", "which model", "who are you", "what are you", "who built", "who created", "who made"]
+        if any(mk in q_lower for mk in meta_keywords):
+            return (
+                "### 🤖 Model & Architecture Overview\n\n"
+                "I am the **DarGlobal & Wasalt Real Estate AI Advisor**.\n\n"
+                "- **LLM Inference:** Free-tier models available via **OpenRouter** (primary: `nvidia/nemotron-3.5-lightning:free`, with automatic failover to `google/gemma-4-31b-it:free` and `liquid/lfm-3-1.7b:free`).\n"
+                "- **RAG Engine:** Custom **Hybrid BM25 + Semantic Subword Cosine** fused via **Reciprocal Rank Fusion (RRF)**.\n"
+                "- **Knowledge Base:** 23 scraped luxury properties and masterplans from **DarGlobal** (Dubai, Spain, Oman, Qatar, London) and **Wasalt** (Saudi Arabia).\n"
+                "- **Features:** Multi-turn conversational memory, real-time SSE streaming, and 3-layer domain guardrails.\n\n"
+                "> 💡 *Tip: Connect your free OpenRouter API key in the top bar to enable live generative inference with Nemotron / Gemma.*"
+            )
+
+        # 2. Out-of-domain inquiries when no properties match
         if not properties:
+            # Check if query is clearly off-topic
+            off_topic_hints = ["paper", "research", "code", "coding", "python", "javascript", "recipe", "cook", "weather", "homework", "math", "llm", "gpt"]
+            if any(h in q_lower for h in off_topic_hints):
+                return (
+                    "### 🛡️ Domain Notice\n\n"
+                    "I am exclusively a luxury Real Estate AI Advisor for **DarGlobal** and **Wasalt**.\n\n"
+                    "I cannot assist with general topics such as coding, research papers, machine learning theory, or non-real-estate questions.\n\n"
+                    "**I can gladly assist you with:**\n"
+                    "- DarGlobal branded luxury residences (Lamborghini, Pagani, Missoni, Trump, Aston Martin)\n"
+                    "- Wasalt REGA-certified Saudi properties (Riyadh, Jeddah, Al-Khobar)\n"
+                    "- Pricing, locations, specifications, and developer credentials."
+                )
+
             return (
                 "### 🔍 No Specific Match Found\n\n"
-                "I searched the DarGlobal and Wasalt portfolios, but didn't find properties matching those specific criteria.\n"
+                "I searched the DarGlobal and Wasalt portfolios, but didn't find properties matching those specific criteria.\n\n"
                 "You can explore:\n"
                 "- **DarGlobal International Luxury:** Branded villas and apartments in Dubai, Spain, Oman, and Qatar.\n"
-                "- **Wasalt Saudi Properties:** Residential villas, apartments, and masterplans across Riyadh, Jeddah, and Al-Khobar."
+                "- **Wasalt Saudi Properties:** Residential villas, apartments, and masterplans across Riyadh, Jeddah, and Al-Khobar.\n\n"
+                "> 💡 *Tip: Try searching for a city (e.g. 'Dubai', 'Riyadh', 'Spain') or brand ('Lamborghini', 'Missoni', 'Trump').*"
             )
 
         lines = [

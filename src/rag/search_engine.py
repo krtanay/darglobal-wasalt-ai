@@ -20,7 +20,8 @@ ENGLISH_STOPWORDS = {
     "some", "such", "than", "that", "the", "their", "theirs", "them", "then", "there",
     "these", "they", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was",
     "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "with",
-    "would", "you", "your", "yours", "need", "built"
+    "would", "you", "your", "yours", "need", "built", "using", "use", "uses", "mean", "tell",
+    "give", "want", "like", "know", "model", "models", "ai", "bot", "assistant"
 }
 
 class HybridRealEstateRAG:
@@ -155,10 +156,16 @@ class HybridRealEstateRAG:
         # Step 1: Conversational query expansion
         enriched_query = self.reformulate_query(query, history)
         query_tokens = self.tokenize(enriched_query)
-        if not query_tokens:
-            return self.properties[:top_k]
-
         q_lower = enriched_query.lower()
+
+        broad_triggers = ["all", "browse", "list", "properties", "catalog", "portfolio", "recommend", "show me", "available", "explore"]
+        is_broad_query = any(bt in q_lower for bt in broad_triggers)
+
+        if not query_tokens:
+            if is_broad_query:
+                return self.properties[:top_k]
+            # Queries with no real estate tokens (e.g. meta or off-topic questions)
+            return []
         if not source_filter:
             if "darglobal" in q_lower or "dar global" in q_lower or "international" in q_lower:
                 source_filter = "DarGlobal"
@@ -192,15 +199,18 @@ class HybridRealEstateRAG:
                     denom = tf + k1 * (1 - b + b * (doc_len / (self.avg_dl or 1)))
                     score += idf_val * (num / denom)
 
-            # Metadata exact match boost
-            title_lower = prop.get("title", "").lower()
-            city_lower = prop.get("city", "").lower()
-            country_lower = prop.get("country", "").lower()
+            # Metadata exact word token match boost (avoid substring false positives like 'ai' in 'spain')
+            title_words = set(self.tokenize(prop.get("title", ""), remove_stopwords=False))
+            city_words = set(self.tokenize(prop.get("city", ""), remove_stopwords=False))
+            country_words = set(self.tokenize(prop.get("country", ""), remove_stopwords=False))
+            brand_words = set(self.tokenize(prop.get("brand_partner", "") or "", remove_stopwords=False))
             for token in query_tokens:
-                if token in title_lower:
+                if token in title_words:
+                    score += 2.5
+                if token in city_words or token in country_words:
+                    score += 1.5
+                if token in brand_words:
                     score += 2.0
-                if token in city_lower or token in country_lower:
-                    score += 1.2
 
             bm25_scores.append((idx, score))
 
