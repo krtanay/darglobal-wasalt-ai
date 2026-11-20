@@ -103,12 +103,37 @@ Resolves complex follow-up questions autonomously:
   )
   ```
 
+### 7. Luxury React + shadcn/ui Component Suite
+Designed for high-end web applications (Next.js / Vite / Remix) adhering to official shadcn specifications:
+* **Screen 1 — `LuxuryOnboardingModal` ([`components/ui/luxury-onboarding-modal.tsx`](components/ui/luxury-onboarding-modal.tsx)):**
+  - Dark glassmorphism modal with warm gold borders (`border-amber-500/30`, `bg-neutral-900/95`).
+  - Feature showcase highlighting DarGlobal Branded Ultra-Luxury (Lamborghini, Pagani, Missoni) and Wasalt REGA-Certified Saudi Portfolios.
+  - Interactive OpenRouter API key configuration input with one-click direct activation.
+* **Screen 2 — `LuxuryAIChatCard` ([`components/ui/luxury-chat-card.tsx`](components/ui/luxury-chat-card.tsx)):**
+  - Smooth typewriter loop (`useTypewriter`) cycling through curated luxury investment queries.
+  - Interactive portfolio filter pills (`All Portfolios`, `DarGlobal Luxury`, `Wasalt Saudi Arabia`).
+  - Native auto-resizing textarea, Enter-to-send keyboard shortcuts, and Framer Motion spring micro-interactions.
+* **Full Integration Demo ([`components/ui/demo.tsx`](components/ui/demo.tsx)):** Composite container connecting both screens directly to the `/api/chat` endpoint.
+* **Live Web App Synchronized ([`public/index.html`](public/index.html)):** Typewriter placeholders and interactive portfolio scope pills are active out-of-the-box in the deployed web interface.
+
 ---
 
 ## 📁 Repository Structure
 
 ```text
 darrproject/
+│
+├── components/                   # Production React / shadcn UI Component Suite
+│   └── ui/
+│       ├── luxury-onboarding-modal.tsx  # Screen 1: VIP Onboarding & API key modal
+│       ├── luxury-chat-card.tsx         # Screen 2: Real estate composer with typewriter & filters
+│       ├── demo.tsx                     # Full composite demo container for Next.js / Vite
+│       ├── index.ts                     # Clean barrel export file
+│       └── ai-chat-card-utils/
+│           └── use-typewriter.ts        # Looping typewriter animation hook
+│
+├── lib/
+│   └── utils.ts                  # Standard shadcn clsx + twMerge utility
 │
 ├── data/
 │   ├── properties.json           # Scraped dataset with high-res architectural images
@@ -134,11 +159,14 @@ darrproject/
 │   └── server.py                 # REST & SSE streaming server with security headers & LRU cache
 │
 ├── public/
-│   └── index.html                # Luxury real estate advisor UI (Tailwind & marked)
+│   └── index.html                # Luxury real estate advisor UI (Tailwind & marked & typewriter)
 │
 ├── Dockerfile                    # Multi-stage production container specification
 ├── docker-compose.yml            # Docker Compose orchestration
 ├── render.yaml                   # Render.com automatic deployment blueprint
+├── components.json               # shadcn UI project configuration
+├── tsconfig.json                 # TypeScript compiler configuration with path aliases (@/*)
+├── package.json                  # React, lucide-react, motion, tailwind dependencies
 ├── requirements.txt              # Production dependencies
 ├── start.py                      # Application launcher with environment validation
 ├── test_units.py                 # Unit & integration test suite (8/8 passing)

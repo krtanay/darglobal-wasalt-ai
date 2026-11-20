@@ -519,6 +519,7 @@
       lucide.createIcons();
       loadHealthAndProperties();
       updateApiKeyUI();
+      initTypewriterPlaceholder();
 
       // Keyboard shortcut: Escape closes modal or drawer
       document.addEventListener('keydown', (e) => {
@@ -527,6 +528,67 @@
         }
       });
     });
+
+    const TYPEWRITER_PROMPTS = [
+      "Show me luxury branded residences in Dubai by DarGlobal...",
+      "What luxury family villas are available in Riyadh on Wasalt under 4M SAR?...",
+      "Tell me about the Tierra Viva Lamborghini villas in Spain and their prices...",
+      "Compare DarGlobal international projects with Wasalt Saudi master developments...",
+      "Which properties feature private infinity pools and branded designer interiors?..."
+    ];
+
+    let twIndex = 0;
+    let twCharIndex = 0;
+    let twIsDeleting = false;
+    let twPaused = false;
+
+    function initTypewriterPlaceholder() {
+      const input = document.getElementById('userInput');
+      if (!input) return;
+
+      input.addEventListener('focus', () => {
+        twPaused = true;
+        input.placeholder = "Ask about properties, pricing, locations, or follow-ups...";
+      });
+      input.addEventListener('blur', () => {
+        if (!input.value) {
+          twPaused = false;
+        }
+      });
+      input.addEventListener('input', () => {
+        twPaused = true;
+      });
+
+      function tick() {
+        if (twPaused || (input.value && input.value.trim().length > 0)) {
+          setTimeout(tick, 600);
+          return;
+        }
+
+        const currentPhrase = TYPEWRITER_PROMPTS[twIndex % TYPEWRITER_PROMPTS.length];
+        if (twIsDeleting) {
+          twCharIndex--;
+          input.placeholder = currentPhrase.substring(0, twCharIndex);
+          if (twCharIndex <= 0) {
+            twIsDeleting = false;
+            twIndex++;
+            setTimeout(tick, 400);
+            return;
+          }
+          setTimeout(tick, 18);
+        } else {
+          twCharIndex++;
+          input.placeholder = currentPhrase.substring(0, twCharIndex);
+          if (twCharIndex >= currentPhrase.length) {
+            twIsDeleting = true;
+            setTimeout(tick, 3000);
+            return;
+          }
+          setTimeout(tick, 45);
+        }
+      }
+      tick();
+    }
 
     function showToast(message) {
       const toast = document.getElementById('toast');
