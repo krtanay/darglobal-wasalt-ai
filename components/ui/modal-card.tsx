@@ -28,76 +28,61 @@ export const ModalCard: React.FC<ModalCardProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-hidden">
       <div
         className={cn(
-          "w-full max-w-md rounded-[2rem] bg-neutral-900 border border-neutral-800/80 p-6 sm:p-7 shadow-2xl text-white max-h-[92vh] overflow-y-auto",
+          "w-full max-w-md rounded-[28px] bg-neutral-900 border border-neutral-800/80 p-5 sm:p-6 shadow-2xl text-white overflow-hidden",
           className
         )}
       >
         {/* Header - Compact */}
-        <div className="mb-5 text-center border-b border-neutral-800 pb-3.5">
+        <div className="mb-4 text-center border-b border-neutral-800 pb-3">
           <h1 className="text-xl sm:text-2xl font-semibold leading-tight text-white tracking-tight">
             You're invited to explore
             <br />
             DarGlobal × Wasalt AI
           </h1>
-          <p className="text-xs text-neutral-400 mt-1">
+          <p className="text-[11px] text-neutral-400 mt-1">
             Real Estate AI Advisor with Microsoft-grade security and sub-3ms caching.
           </p>
         </div>
 
-        {/* Benefits Pillars - Smaller, Compact */}
-        <div className="mb-5 space-y-3">
+        {/* Benefits Pillars - 2 High-Impact Items */}
+        <div className="mb-4 space-y-2.5">
           {/* Pillar 1: Ultra-Low Latency */}
           <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
-              <Zap className="h-5 w-5 text-white" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
+              <Zap className="h-4.5 w-4.5 text-white" />
             </div>
             <div className="pt-0.5">
               <h3 className="text-xs sm:text-sm font-semibold text-white">
                 Sub-3ms Latency & Streaming
               </h3>
-              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
+              <p className="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
                 Sub-3ms LRU response cache for instant answers, backed by sub-200ms real-time token streaming.
               </p>
             </div>
           </div>
 
-          {/* Pillar 2: Microsoft-Grade Security */}
+          {/* Pillar 2: Microsoft-Grade Security & Verified RAG */}
           <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
-              <ShieldCheck className="h-5 w-5 text-white" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
+              <ShieldCheck className="h-4.5 w-4.5 text-white" />
             </div>
             <div className="pt-0.5">
               <h3 className="text-xs sm:text-sm font-semibold text-white">
-                Microsoft PromptShield
+                Microsoft PromptShield & Verified RAG
               </h3>
-              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
-                Enterprise prompt injection defense and IdentityShield with zero internal vendor leaks.
-              </p>
-            </div>
-          </div>
-
-          {/* Pillar 3: Grounded Portfolios */}
-          <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-            <div className="pt-0.5">
-              <h3 className="text-xs sm:text-sm font-semibold text-white">
-                Grounded Luxury Portfolios
-              </h3>
-              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
-                Curated listings from DarGlobal (Lamborghini, Pagani, Missoni) and Wasalt (REGA-certified Saudi homes).
+              <p className="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
+                Enterprise prompt injection defense grounded in verified DarGlobal luxury & Wasalt masterplans.
               </p>
             </div>
           </div>
         </div>
 
         {/* OpenRouter API Key Input */}
-        <div className="mb-4 rounded-xl border border-neutral-800 bg-neutral-950/80 p-3">
-          <label className="mb-1.5 flex items-center justify-between text-xs font-semibold text-neutral-200">
+        <div className="mb-3.5 rounded-xl border border-neutral-800 bg-neutral-950/80 p-2.5">
+          <label className="mb-1 flex items-center justify-between text-xs font-semibold text-neutral-200">
             <span className="flex items-center gap-1.5">
               <Key className="h-3.5 w-3.5 text-blue-400" />
               <span>OpenRouter API Key (Optional)</span>
@@ -116,11 +101,8 @@ export const ModalCard: React.FC<ModalCardProps> = ({
           </p>
         </div>
 
-        {/* Divider */}
-        <div className="mb-4 h-px bg-neutral-800" />
-
         {/* Disclaimer - Small */}
-        <div className="mb-4 text-center">
+        <div className="mb-3 text-center">
           <p className="text-[11px] leading-relaxed text-neutral-400">
             All recommendations are grounded in verified public real estate data.
           </p>
@@ -128,7 +110,7 @@ export const ModalCard: React.FC<ModalCardProps> = ({
             href="https://darglobal.co.uk"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-block text-[11px] text-white underline underline-offset-4 hover:text-blue-400 transition"
+            class="mt-0.5 inline-block text-[11px] text-white underline underline-offset-4 hover:text-blue-400 transition"
           >
             Learn more about DarGlobal & Wasalt portfolios.
           </a>
@@ -137,7 +119,7 @@ export const ModalCard: React.FC<ModalCardProps> = ({
         {/* Primary Action Button */}
         <button
           onClick={handleStart}
-          className="w-full rounded-full bg-blue-600 py-3 font-semibold text-white text-sm transition hover:bg-blue-500 mb-3 cursor-pointer shadow-lg shadow-blue-600/25 active:scale-[0.99]"
+          className="w-full rounded-full bg-blue-600 py-2.5 font-semibold text-white text-sm transition hover:bg-blue-500 mb-2.5 cursor-pointer shadow-lg shadow-blue-600/25 active:scale-[0.98]"
         >
           Start chatting
         </button>
