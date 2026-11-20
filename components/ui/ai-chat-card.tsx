@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowUp, MessageCircleDashed, Plus, RefreshCw } from "lucide-react";
+import { ArrowUp, Building2, RefreshCw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTypewriter } from "@/components/ui/ai-chat-card-utils/use-typewriter";
 
@@ -34,13 +34,13 @@ const DEFAULT_PROMPTS = [
 ];
 
 export function AIChatCard({
-  title = "New Chat",
-  subtitle = "How can I help you today?",
-  greeting = "Morning, Arihant!",
-  prompt = "What are we working on today? Press send to start a new conversation",
+  title = "Property Advisor",
+  subtitle = "DarGlobal International × Wasalt Saudi Arabia",
+  greeting = "Welcome to DarGlobal × Wasalt AI",
+  prompt = "How can I help you find your dream property today?",
   prompts = DEFAULT_PROMPTS,
   autoType = true,
-  placeholder = "Ask anything...",
+  placeholder = "Ask about branded villas, pricing, or Saudi masterplans...",
   onSend,
   onReset,
   messages = [],
@@ -127,16 +127,24 @@ export function AIChatCard({
       {/* Main Body */}
       <div className="flex-1 flex flex-col justify-center py-6 overflow-y-auto max-h-[380px]">
         {messages.length === 0 ? (
-          /* Empty State matching Image 2 */
+          /* Empty State with Chatbot Logo & Welcoming Prompt */
           <div className="text-center my-auto">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-800/80 mx-auto mb-4">
-              <MessageCircleDashed className="h-6 w-6 text-neutral-300" />
+            {/* Chatbot Logo */}
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-800 border border-neutral-700/80 mx-auto mb-4 shadow-lg shadow-black/50">
+              <Building2 className="h-7 w-7 text-white" />
+              <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold">
+                <Sparkles className="h-2.5 w-2.5 text-white" />
+              </div>
             </div>
+
             <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
               {greeting}
             </h3>
             <p className="text-sm text-neutral-400 max-w-xs mx-auto mt-2 leading-relaxed">
               {prompt}
+            </p>
+            <p className="text-xs text-neutral-500 max-w-xs mx-auto mt-1">
+              Inquire about branded villas in Dubai & Spain, or verified family homes in Riyadh & Jeddah.
             </p>
           </div>
         ) : (
@@ -174,7 +182,7 @@ export function AIChatCard({
         )}
       </div>
 
-      {/* Composer at Bottom matching Image 2 */}
+      {/* Composer at Bottom */}
       <div className="rounded-2xl bg-neutral-900 border border-neutral-800 p-4">
         <textarea
           ref={textareaRef}
@@ -190,15 +198,7 @@ export function AIChatCard({
           className="w-full resize-none bg-transparent text-sm text-white placeholder-neutral-500 focus:outline-none"
         />
 
-        <div className="flex items-center justify-between pt-3 border-t border-neutral-800/80 mt-1">
-          <button
-            type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition cursor-pointer"
-            title="Options"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
-
+        <div className="flex items-center justify-end pt-3 border-t border-neutral-800/80 mt-1">
           <button
             type="button"
             onClick={handleSend}

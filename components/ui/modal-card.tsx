@@ -1,13 +1,14 @@
 "use client";
 
-import React from "react";
-import { MessageCircle, Smile } from "lucide-react";
+import React, { useState } from "react";
+import { Zap, ShieldCheck, Building2, Key } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ModalCardProps {
   isOpen?: boolean;
-  onStartChatting?: () => void;
+  onStartChatting?: (apiKey?: string) => void;
   onMaybeLater?: () => void;
+  initialKey?: string;
   className?: string;
 }
 
@@ -15,84 +16,128 @@ export const ModalCard: React.FC<ModalCardProps> = ({
   isOpen = true,
   onStartChatting,
   onMaybeLater,
+  initialKey = "",
   className,
 }) => {
+  const [apiKey, setApiKey] = useState(initialKey);
+
   if (!isOpen) return null;
 
+  const handleStart = () => {
+    onStartChatting?.(apiKey.trim());
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
       <div
         className={cn(
-          "w-full max-w-md rounded-[2.5rem] bg-neutral-900 border border-neutral-800/80 p-8 shadow-2xl text-white",
+          "w-full max-w-md rounded-[2rem] bg-neutral-900 border border-neutral-800/80 p-6 sm:p-7 shadow-2xl text-white max-h-[92vh] overflow-y-auto",
           className
         )}
       >
-        {/* Header */}
-        <div className="mb-8 text-center border-b border-neutral-800 pb-5">
-          <h1 className="text-3xl font-semibold leading-tight text-white tracking-tight">
-            You're invited to try
+        {/* Header - Compact */}
+        <div className="mb-5 text-center border-b border-neutral-800 pb-3.5">
+          <h1 className="text-xl sm:text-2xl font-semibold leading-tight text-white tracking-tight">
+            You're invited to explore
             <br />
             DarGlobal × Wasalt AI
           </h1>
+          <p className="text-xs text-neutral-400 mt-1">
+            Real Estate AI Advisor with Microsoft-grade security and sub-3ms caching.
+          </p>
         </div>
 
-        {/* Features */}
-        <div className="mb-8 space-y-6">
-          {/* Feature 1: Natural Conversations */}
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 shadow-md shadow-blue-600/30">
-              <MessageCircle className="h-7 w-7 text-white" />
+        {/* Benefits Pillars - Smaller, Compact */}
+        <div className="mb-5 space-y-3">
+          {/* Pillar 1: Ultra-Low Latency */}
+          <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
+              <Zap className="h-5 w-5 text-white" />
             </div>
-            <div className="pt-1">
-              <h3 className="mb-1 text-lg font-semibold text-white">
-                Natural Conversations
+            <div className="pt-0.5">
+              <h3 className="text-xs sm:text-sm font-semibold text-white">
+                Sub-3ms Latency & Streaming
               </h3>
-              <p className="text-sm text-neutral-400 leading-relaxed">
-                Real-time responses with verified property pricing and specs.
+              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
+                Sub-3ms LRU response cache for instant answers, backed by sub-200ms real-time token streaming.
               </p>
             </div>
           </div>
 
-          {/* Feature 2: Curated Portfolios */}
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 shadow-md shadow-blue-600/30">
-              <Smile className="h-7 w-7 text-white" />
+          {/* Pillar 2: Microsoft-Grade Security */}
+          <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
+              <ShieldCheck className="h-5 w-5 text-white" />
             </div>
-            <div className="pt-1">
-              <h3 className="mb-1 text-lg font-semibold text-white">
-                Curated Portfolios
+            <div className="pt-0.5">
+              <h3 className="text-xs sm:text-sm font-semibold text-white">
+                Microsoft PromptShield
               </h3>
-              <p className="text-sm text-neutral-400 leading-relaxed">
-                DarGlobal branded icons & Wasalt REGA Saudi master developments.
+              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
+                Enterprise prompt injection defense and IdentityShield with zero internal vendor leaks.
               </p>
             </div>
           </div>
+
+          {/* Pillar 3: Grounded Portfolios */}
+          <div className="flex items-start gap-3 p-2.5 rounded-xl bg-neutral-950/60 border border-neutral-800/80">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 shadow-md shadow-blue-600/30">
+              <Building2 className="h-5 w-5 text-white" />
+            </div>
+            <div className="pt-0.5">
+              <h3 className="text-xs sm:text-sm font-semibold text-white">
+                Grounded Luxury Portfolios
+              </h3>
+              <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed mt-0.5">
+                Curated listings from DarGlobal (Lamborghini, Pagani, Missoni) and Wasalt (REGA-certified Saudi homes).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* OpenRouter API Key Input */}
+        <div className="mb-4 rounded-xl border border-neutral-800 bg-neutral-950/80 p-3">
+          <label className="mb-1.5 flex items-center justify-between text-xs font-semibold text-neutral-200">
+            <span className="flex items-center gap-1.5">
+              <Key className="h-3.5 w-3.5 text-blue-400" />
+              <span>OpenRouter API Key (Optional)</span>
+            </span>
+            <span className="text-[10px] text-emerald-400 font-mono">Free Tier Ready</span>
+          </label>
+          <input
+            type="password"
+            placeholder="sk-or-v1-... (optional, server key is ready)"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs font-mono text-white placeholder-neutral-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <p className="mt-1 text-[10px] text-neutral-400">
+            Free models (Nemotron 3.5, Gemma 4, Liquid LFM) run automatically at zero cost.
+          </p>
         </div>
 
         {/* Divider */}
-        <div className="mb-6 h-px bg-neutral-800" />
+        <div className="mb-4 h-px bg-neutral-800" />
 
-        {/* Disclaimer */}
-        <div className="mb-6 text-center">
-          <p className="text-sm leading-relaxed text-neutral-400">
-            AI Advisor may make mistakes. Access
-            <br />
-            and limits are subject to change.
+        {/* Disclaimer - Small */}
+        <div className="mb-4 text-center">
+          <p className="text-[11px] leading-relaxed text-neutral-400">
+            All recommendations are grounded in verified public real estate data.
           </p>
           <a
             href="https://darglobal.co.uk"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block text-sm text-white underline underline-offset-4 hover:text-blue-400 transition"
+            className="mt-1 inline-block text-[11px] text-white underline underline-offset-4 hover:text-blue-400 transition"
           >
-            Learn more about DarGlobal & Wasalt.
+            Learn more about DarGlobal & Wasalt portfolios.
           </a>
         </div>
 
         {/* Primary Action Button */}
         <button
-          onClick={onStartChatting}
-          className="w-full rounded-full bg-blue-600 py-4 font-semibold text-white text-base transition hover:bg-blue-500 mb-4 cursor-pointer shadow-lg shadow-blue-600/25 active:scale-[0.99]"
+          onClick={handleStart}
+          className="w-full rounded-full bg-blue-600 py-3 font-semibold text-white text-sm transition hover:bg-blue-500 mb-3 cursor-pointer shadow-lg shadow-blue-600/25 active:scale-[0.99]"
         >
           Start chatting
         </button>
@@ -101,7 +146,7 @@ export const ModalCard: React.FC<ModalCardProps> = ({
         <div className="text-center">
           <button
             onClick={onMaybeLater}
-            className="text-sm text-neutral-400 hover:text-white transition cursor-pointer"
+            className="text-xs text-neutral-400 hover:text-white transition cursor-pointer"
           >
             Maybe later
           </button>
