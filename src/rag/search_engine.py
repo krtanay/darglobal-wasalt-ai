@@ -21,7 +21,8 @@ ENGLISH_STOPWORDS = {
     "these", "they", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was",
     "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "with",
     "would", "you", "your", "yours", "need", "built", "using", "use", "uses", "mean", "tell",
-    "give", "want", "like", "know", "model", "models", "ai", "bot", "assistant"
+    "give", "want", "like", "know", "model", "models", "ai", "bot", "assistant",
+    "test", "testing", "sample", "check", "hello", "hi", "hey"
 }
 
 class HybridRealEstateRAG:
@@ -246,8 +247,8 @@ class HybridRealEstateRAG:
         broad_triggers = ["all", "browse", "list", "properties", "catalog", "portfolio", "recommend", "show me", "available"]
         is_broad_query = any(bt in q_lower for bt in broad_triggers)
 
-        if max_bm25 <= 0.0 and max_semantic < 0.08 and not is_broad_query:
-            # Query is completely unrelated to real estate (e.g. research papers, coding, etc.)
+        if max_bm25 <= 0.0 and max_semantic < 0.18 and not is_broad_query:
+            # Query is completely unrelated to real estate (e.g. greetings, testing, meta, off-topic)
             return []
 
         # Reciprocal Rank Fusion (RRF)

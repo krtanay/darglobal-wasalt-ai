@@ -118,14 +118,14 @@ export function AIChatCard({
         <button
           onClick={handleResetClick}
           aria-label="Reset chat"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white transition cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white transition-all duration-150 active:scale-90 cursor-pointer"
         >
           <RefreshCw className={cn("h-4 w-4 transition-transform duration-500", isRotating && "rotate-180")} />
         </button>
       </div>
 
       {/* Main Body */}
-      <div className="flex-1 flex flex-col justify-center py-6 overflow-y-auto max-h-[380px]">
+      <div className="flex-1 min-h-0 flex flex-col justify-start py-4 overflow-y-auto max-h-[380px]">
         {messages.length === 0 ? (
           /* Empty State with Chatbot Logo & Welcoming Prompt */
           <div className="text-center my-auto">
@@ -203,7 +203,12 @@ export function AIChatCard({
             type="button"
             onClick={handleSend}
             disabled={!message.trim()}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition disabled:opacity-40 cursor-pointer"
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-150 active:scale-90 cursor-pointer",
+              message.trim()
+                ? "bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30"
+                : "bg-white text-black hover:bg-neutral-200 disabled:opacity-40"
+            )}
             aria-label="Send message"
           >
             <ArrowUp className="h-4 w-4 stroke-[2.5]" />

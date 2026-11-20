@@ -75,6 +75,28 @@
       from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
+
+    /* Modal origin-aware exit transition */
+    .modal-fade-out {
+      opacity: 0;
+      transform: scale(0.96) translateY(-8px);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* Staggered Card Entrance */
+    @keyframes cardSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .stagger-card {
+      animation: cardSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
   </style>
 </head>
 
@@ -228,7 +250,7 @@
       </div>
 
       <!-- Center Body: Empty State or Conversation Stream -->
-      <div id="chatBody" class="flex-1 flex flex-col justify-center py-6 overflow-y-auto max-h-[380px] pr-1">
+      <div id="chatBody" class="flex-1 min-h-0 flex flex-col justify-start py-4 overflow-y-auto max-h-[380px] pr-1">
         
         <!-- Empty State with Chatbot Logo & Welcome -->
         <div id="emptyState" class="text-center my-auto">
@@ -275,7 +297,7 @@
             type="button" 
             onclick="sendMessage()" 
             aria-label="Send message"
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition cursor-pointer"
+            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition-all duration-150 active:scale-90 cursor-pointer"
           >
             <i data-lucide="arrow-up" class="h-4 w-4 stroke-[2.5]"></i>
           </button>
@@ -340,7 +362,7 @@
       timer = setTimeout(runTypewriter, speed);
     }
 
-    // Step 1: Start Chatting Closes Screen 1 Popup & Configures Key
+    // Step 1: Start Chatting Closes Screen 1 Popup & Configures Key with Origin Awareness
     function startChatting() {
       const keyInput = document.getElementById("modalApiKeyInput");
       if (keyInput && keyInput.value.trim()) {
@@ -353,9 +375,15 @@
       }
 
       const modal = document.getElementById("modalOverlay");
-      modal.classList.add("hidden");
-      const input = document.getElementById("chatInput");
-      if (input) input.focus();
+      const modalBox = modal.querySelector(".w-full.max-w-md");
+      if (modalBox) {
+        modalBox.classList.add("modal-fade-out");
+      }
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        const input = document.getElementById("chatInput");
+        if (input) input.focus();
+      }, 200);
     }
 
 
@@ -429,7 +457,7 @@
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullReply = "";
-        let sourcesAttached = false;
+        let pendingSources = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -450,10 +478,9 @@
                   assistantBox.contentDiv.innerHTML = marked.parse(fullReply);
                   scrollDown();
                 }
-                if (parsed.sources && parsed.sources.length > 0 && !sourcesAttached) {
-                  sourcesAttached = true;
-                  renderPropertyCards(assistantBox.cardContainer, parsed.sources);
-                  scrollDown();
+                if (parsed.sources && parsed.sources.length > 0) {
+                  // Buffer sources so property cards appear at the end, not before text
+                  pendingSources = parsed.sources;
                 }
               } catch (e) {
                 fullReply += dataStr;
@@ -462,6 +489,12 @@
               }
             }
           }
+        }
+
+        // Attach property cards ONLY AFTER text generation finishes
+        if (pendingSources && pendingSources.length > 0) {
+          renderPropertyCards(assistantBox.cardContainer, pendingSources);
+          scrollDown(true);
         }
 
         conversationHistory.push({ role: "assistant", content: fullReply });
@@ -480,7 +513,7 @@
         </div>
       `;
       list.appendChild(div);
-      scrollDown();
+      scrollDown(true);
     }
 
     function appendAssistantBox() {
@@ -492,11 +525,11 @@
           <div class="prose prose-invert max-w-none prose-content">
             <span class="cursor-pulse"></span>
           </div>
-          <div class="mt-3 property-cards-slot"></div>
+          <div class="property-cards-slot"></div>
         </div>
       `;
       list.appendChild(div);
-      scrollDown();
+      scrollDown(true);
 
       const contentDiv = div.querySelector(".prose-content");
       const cardContainer = div.querySelector(".property-cards-slot");
@@ -505,33 +538,53 @@
 
     function renderPropertyCards(slot, properties) {
       if (!properties || properties.length === 0) return;
-      let html = `<div class="space-y-2.5 pt-2 border-t border-neutral-800">`;
-      properties.slice(0, 3).forEach(p => {
+      let html = `
+        <div class="pt-3 mt-3 border-t border-neutral-800">
+          <div class="text-[11px] font-medium text-neutral-400 mb-2.5 flex items-center space-x-1.5">
+            <i data-lucide="building-2" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Featured Property Matches (${properties.length})</span>
+          </div>
+          <div class="space-y-2.5">
+      `;
+      properties.slice(0, 3).forEach((p, idx) => {
+        const isDarGlobal = p.source === 'DarGlobal';
+        const badgeClass = isDarGlobal 
+          ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30' 
+          : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30';
+        const badgeLabel = isDarGlobal ? 'DarGlobal Luxury' : 'Wasalt Saudi';
+
         html += `
-          <div class="rounded-xl border border-neutral-800 bg-[#171717] p-2.5 flex items-center space-x-3 hover:border-neutral-700 transition">
+          <div 
+            class="stagger-card rounded-xl border border-neutral-800 bg-[#161616] p-2.5 flex items-center space-x-3 hover:border-neutral-700 hover:bg-[#1a1a1a] transition-all duration-200"
+            style="animation-delay: ${idx * 65}ms;"
+          >
             ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="h-14 w-14 rounded-lg object-cover shrink-0">` : ''}
             <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between text-[11px] text-neutral-400 mb-0.5">
-                <span class="text-blue-400 font-medium">${p.source}</span>
-                <span>${p.city || p.location}</span>
+              <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold ${badgeClass}">${badgeLabel}</span>
+                <span class="text-neutral-400 text-[10px]">${p.city || p.location}</span>
               </div>
               <h4 class="text-xs font-semibold text-white truncate">${p.title}</h4>
-              <p class="text-xs text-neutral-200 font-semibold">${p.price || 'Price on request'}</p>
+              <p class="text-xs text-neutral-200 font-semibold mt-0.5">${p.price || 'Price on request'}</p>
             </div>
-            <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300">
+            <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition active:scale-90 shrink-0" title="View official listing">
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
           </div>
         `;
       });
-      html += `</div>`;
+      html += `</div></div>`;
       slot.innerHTML = html;
       lucide.createIcons();
     }
 
-    function scrollDown() {
+    function scrollDown(force = false) {
       const body = document.getElementById("chatBody");
-      body.scrollTop = body.scrollHeight;
+      if (!body) return;
+      const isNearBottom = (body.scrollHeight - body.scrollTop - body.clientHeight) < 120;
+      if (force || isNearBottom) {
+        body.scrollTop = body.scrollHeight;
+      }
     }
 
     function escapeHtml(str) {
@@ -554,10 +607,22 @@
         .catch(console.error);
 
       const input = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendBtn");
+
+      input.addEventListener("input", () => {
+        userActive = true;
+        if (input.value.trim().length > 0) {
+          sendBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all duration-150 active:scale-90 cursor-pointer";
+        } else {
+          sendBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition-all duration-150 active:scale-90 cursor-pointer";
+        }
+      });
+
       input.addEventListener("focus", () => {
         if (!userActive) {
           userActive = true;
           input.value = PROMPTS[promptIdx];
+          sendBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all duration-150 active:scale-90 cursor-pointer";
         }
       });
     });

@@ -40,10 +40,21 @@ Autonomously resolves complex conversational references across multiple turns:
 * **Instant Startup:** Sub-second container startup (<0.5s) and minimal RAM footprint (<40MB).
 * **Dual Implementation Agility:** Includes both the lightweight native engine and an enterprise LangChain Expression Language (LCEL) chain ([`src/langchain_pipeline.py`](src/langchain_pipeline.py)).
 
-### 6. 🎨 Modern React + shadcn/ui Component Suite
+### 6. 🎨 Motion Engineering & Cognitive UX Ergonomics
+Engineered following classical animation physics and human cognitive design laws:
+* **Doherty Threshold (<400ms):** Sub-3ms LRU caching and <100ms first-token SSE generation maintain unbroken user flow and engagement.
+* **Choreographed Staggering:** Property cards attach with a silky 65ms cascading entrance (`animation-delay: ${idx * 65}ms`) rather than snapping into the DOM, easing visual scanning.
+* **Origin Awareness & Easing:** Spatial scale-down transitions (`scale-[0.96] translateY(-8px)`) calibrated to Apple's fluid curve: `cubic-bezier(0.16, 1, 0.3, 1)`.
+* **Von Restorff Isolation Effect:** Visual hierarchy separates International Branded Residences (**Amber/Gold tags**) from Domestic Saudi Masterplans (**Emerald tags**), with high-contrast primary action triggers.
+* **Anticipation State:** The composer send button dynamically illuminates from neutral white to vibrant blue with ambient elevation when input is detected.
+* **Interruptible Interaction:** Fast takeover architecture immediately aborts background typewriter sequences upon focus or keystroke (`clearTimeout`).
+* **Peak-End Rule:** Concludes every interaction with rich, actionable property cards with verified pricing, specifications, and direct official project links.
+
+### 7. 🧱 Production React + shadcn/ui Component Suite
 Designed following official shadcn specifications and human-crafted minimalism:
-* **Screen 1 — `ModalCard` ([`components/ui/modal-card.tsx`](components/ui/modal-card.tsx)):** Compact benefit-driven onboarding modal with royal-blue squircle accents and OpenRouter API key configuration.
+* **Screen 1 — `ModalCard` ([`components/ui/modal-card.tsx`](components/ui/modal-card.tsx)):** Compact benefit-driven onboarding modal with royal-blue squircle accents, technical pillars, and OpenRouter API key configuration.
 * **Screen 2 — `AIChatCard` ([`components/ui/ai-chat-card.tsx`](components/ui/ai-chat-card.tsx)):** Clean property chat card with architectural AI logo, welcoming hero, looping typewriter prompts, and streaming responses.
+* **Demo Composite — `demo.tsx` ([`components/ui/demo.tsx`](components/ui/demo.tsx)):** Drop-in Next.js / Vite full-screen composite.
 
 ---
 
