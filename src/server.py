@@ -48,6 +48,10 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory="public", **kwargs)
 
+    def do_HEAD(self):
+        """Handle HEAD requests identically to GET."""
+        self.do_GET()
+
     def _send_security_headers(self):
         """OWASP & Microsoft Enterprise HTTP Security Headers."""
         self.send_header("X-Content-Type-Options", "nosniff")
