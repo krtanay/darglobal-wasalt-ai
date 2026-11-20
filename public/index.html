@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DarGlobal × Wasalt — Luxury Real Estate AI Advisory</title>
+  <title>DarGlobal × Wasalt — AI Advisory</title>
   
-  <!-- Fonts -->
+  <!-- Modern Clean Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS & Markdown Engine & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,17 +21,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-            display: ['"Cinzel"', 'Georgia', 'serif'],
-          },
-          colors: {
-            gold: {
-              300: '#fae8b2',
-              400: '#f5d77f',
-              500: '#d4af37',
-              600: '#b89228',
-              700: '#8c6b16',
-            }
+            sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
           }
         }
       }
@@ -39,35 +29,29 @@
   </script>
   
   <style>
-    /* Sleek custom scrollbars */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    /* Custom sleek scrollbars */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #262626; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
-
-    /* Accessibility focus */
-    *:focus-visible {
-      outline: 2px solid #d4af37;
-      outline-offset: 2px;
-    }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
     /* Markdown prose inside assistant replies */
-    .prose a { color: #f5d77f; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
-    .prose a:hover { color: #ffffff; }
-    .prose h3, .prose h4 { color: #ffffff; font-weight: 700; margin-top: 0.8rem; margin-bottom: 0.4rem; }
-    .prose p { margin-bottom: 0.65rem; line-height: 1.65; color: #d4d4d4; font-size: 0.925rem; }
-    .prose ul { list-style-type: none; padding-left: 0; margin-bottom: 0.65rem; }
-    .prose ul li { position: relative; padding-left: 1.25rem; margin-bottom: 0.35rem; color: #d4d4d4; font-size: 0.9rem; }
-    .prose ul li::before { content: "▪"; position: absolute; left: 0; color: #d4af37; font-size: 0.9rem; }
+    .prose a { color: #60a5fa; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
+    .prose a:hover { color: #93c5fd; }
+    .prose h3, .prose h4 { color: #ffffff; font-weight: 600; margin-top: 0.8rem; margin-bottom: 0.35rem; font-size: 0.95rem; }
+    .prose p { margin-bottom: 0.5rem; line-height: 1.6; color: #d4d4d4; font-size: 0.875rem; }
+    .prose ul { list-style-type: none; padding-left: 0; margin-bottom: 0.5rem; }
+    .prose ul li { position: relative; padding-left: 1.1rem; margin-bottom: 0.25rem; color: #d4d4d4; font-size: 0.85rem; }
+    .prose ul li::before { content: "•"; position: absolute; left: 0; color: #3b82f6; font-size: 1rem; }
     .prose strong { color: #ffffff; font-weight: 600; }
-    .prose code { background: #262626; color: #f5d77f; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; }
+    .prose code { background: #262626; color: #93c5fd; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.8em; font-family: monospace; }
 
-    /* Blinking streaming cursor */
+    /* Pulsing stream cursor */
     .cursor-pulse {
       display: inline-block;
-      width: 6px;
-      height: 15px;
-      background: #d4af37;
+      width: 5px;
+      height: 14px;
+      background: #3b82f6;
       vertical-align: middle;
       margin-left: 3px;
       animation: cursorBlink 0.9s infinite;
@@ -77,382 +61,193 @@
       50% { opacity: 0; }
     }
 
-    /* Dark luxury radial background */
-    .radial-luxury-bg {
-      background: 
-        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12) 0%, rgba(10, 10, 10, 0) 55%),
-        radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.05) 0%, rgba(10, 10, 10, 0) 40%),
-        #0a0a0a;
+    /* Modal entrance animation */
+    .fade-scale {
+      animation: enterAnimation 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
-    /* Spin animation for reset button */
-    @keyframes spin-once {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .spin-active {
-      animation: spin-once 0.6s ease-in-out;
-    }
-
-    /* Smooth scale fade */
-    .modal-enter {
-      animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: scale(0.95); }
+    @keyframes enterAnimation {
+      from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 
-<body class="radial-luxury-bg min-h-screen text-slate-100 font-sans antialiased flex flex-col justify-between selection:bg-gold-500/30 selection:text-gold-300">
+<body class="bg-black text-slate-100 font-sans antialiased min-h-screen flex items-center justify-center p-4 selection:bg-blue-600/30 selection:text-blue-300">
 
   <!-- ======================================================== -->
-  <!-- SCREEN 1: FIRST SCREEN AS POPUP (modal-card.tsx design)  -->
+  <!-- SCREEN 1: MODAL CARD (Matches Image 1 Exactly)           -->
   <!-- ======================================================== -->
-  <div id="onboardingPopupOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xl">
-    <div 
-      id="onboardingCard"
-      class="relative w-full max-w-md rounded-[2.5rem] border border-amber-500/30 bg-neutral-900/95 p-6 sm:p-7 shadow-2xl shadow-amber-500/15 text-white backdrop-blur-2xl max-h-[92vh] overflow-y-auto flex flex-col justify-between modal-enter"
-    >
-      <!-- Close Button -->
+  <div id="modalOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+    <div class="w-full max-w-md rounded-[2.5rem] bg-neutral-900 border border-neutral-800 p-8 shadow-2xl text-white fade-scale">
+      
+      <!-- Header -->
+      <div class="mb-8 text-center border-b border-neutral-800 pb-5">
+        <h1 class="text-3xl font-semibold leading-tight text-white tracking-tight">
+          You're invited to try<br>
+          advanced AI Voice Mode
+        </h1>
+      </div>
+
+      <!-- Features -->
+      <div class="mb-8 space-y-6">
+        <!-- Feature 1: Natural Conversations -->
+        <div class="flex items-start gap-4">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-600/30">
+            <i data-lucide="message-circle" class="h-7 w-7 text-white"></i>
+          </div>
+          <div class="pt-1">
+            <h3 class="mb-1 text-lg font-semibold text-white">
+              Natural Conversations
+            </h3>
+            <p class="text-sm text-neutral-400 leading-relaxed">
+              Real-time responses you can interrupt.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Emotion and Tone -->
+        <div class="flex items-start gap-4">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-600/30">
+            <i data-lucide="smile" class="h-7 w-7 text-white"></i>
+          </div>
+          <div class="pt-1">
+            <h3 class="mb-1 text-lg font-semibold text-white">
+              Emotion and Tone
+            </h3>
+            <p class="text-sm text-neutral-400 leading-relaxed">
+              Senses and responds to humor,<br>sarcasm, and more.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="mb-6 h-px bg-neutral-800"></div>
+
+      <!-- Disclaimer -->
+      <div class="mb-6 text-center">
+        <p class="text-sm leading-relaxed text-neutral-400">
+          Voice Mode may make mistakes. Access<br>and limits are subject to change.
+        </p>
+        <a 
+          href="#" 
+          onclick="event.preventDefault(); startChatting();"
+          class="mt-2 inline-block text-sm text-white underline underline-offset-4 hover:text-blue-400 transition"
+        >
+          Learn more about advanced Voice Mode.
+        </a>
+      </div>
+
+      <!-- Action Button -->
       <button 
-        onclick="enterAdvisoryPortal()" 
-        class="absolute right-5 top-5 rounded-full p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
-        title="Close & Open Chatbot"
-        aria-label="Close popup"
+        onclick="startChatting()" 
+        class="w-full rounded-full bg-blue-600 py-4 font-semibold text-white text-base transition-colors hover:bg-blue-500 mb-4 cursor-pointer shadow-lg shadow-blue-600/25 active:scale-[0.99]"
       >
-        <i data-lucide="x" class="w-5 h-5"></i>
+        Start chatting
       </button>
 
-      <div>
-        <!-- Executive Gold Header -->
-        <div class="mb-5 text-center border-b border-neutral-800/90 pb-4">
-          <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 shadow-xl shadow-amber-500/25">
-            <i data-lucide="building-2" class="h-7 w-7 text-neutral-950"></i>
-          </div>
-          <h1 class="text-xl sm:text-2xl font-bold leading-tight text-white font-display tracking-wide uppercase">
-            You're invited to try<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 font-extrabold">
-              DarGlobal × Wasalt AI Advisory
-            </span>
-          </h1>
-          <p class="mt-1.5 text-xs text-neutral-400">
-            Executive property guidance for international branded residences and Saudi PropTech master developments.
-          </p>
-        </div>
-
-        <!-- 3 Feature Pillars -->
-        <div class="mb-5 space-y-3">
-          <!-- Pillar 1: DarGlobal -->
-          <div class="flex items-start gap-3.5 p-3 rounded-2xl bg-neutral-950/70 border border-neutral-800/80">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/30">
-              <i data-lucide="sparkles" class="h-5 w-5 text-amber-400"></i>
-            </div>
-            <div class="pt-0.5">
-              <h3 class="text-xs sm:text-sm font-semibold text-white">
-                Branded Architectural Masterpieces
-              </h3>
-              <p class="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
-                Ultra-luxury residences with <strong>Lamborghini</strong>, <strong>Pagani</strong>, <strong>Missoni</strong>, and <strong>Trump</strong> across Dubai, Spain, London, and Oman.
-              </p>
-            </div>
-          </div>
-
-          <!-- Pillar 2: Wasalt -->
-          <div class="flex items-start gap-3.5 p-3 rounded-2xl bg-neutral-950/70 border border-neutral-800/80">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30">
-              <i data-lucide="shield-check" class="h-5 w-5 text-emerald-400"></i>
-            </div>
-            <div class="pt-0.5">
-              <h3 class="text-xs sm:text-sm font-semibold text-white">
-                REGA-Certified Saudi Portfolios
-              </h3>
-              <p class="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
-                Verified masterplans, private family villas, and high-yield properties in Riyadh, Jeddah, and Al-Khobar.
-              </p>
-            </div>
-          </div>
-
-          <!-- Pillar 3: Microsoft Safety & Speed -->
-          <div class="flex items-start gap-3.5 p-3 rounded-2xl bg-neutral-950/70 border border-neutral-800/80">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 border border-blue-500/30">
-              <i data-lucide="zap" class="h-5 w-5 text-blue-400"></i>
-            </div>
-            <div class="pt-0.5">
-              <h3 class="text-xs sm:text-sm font-semibold text-white">
-                Sub-3ms Caching & PromptShield
-              </h3>
-              <p class="text-[11px] text-neutral-400 leading-relaxed mt-0.5">
-                Enterprise jailbreak interception, zero model identity leakage, and sub-200ms real-time streaming.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Optional OpenRouter Key -->
-        <div class="mb-4 rounded-2xl border border-neutral-800 bg-neutral-950/80 p-3">
-          <label class="mb-1 flex items-center justify-between text-[11px] font-semibold text-neutral-200">
-            <span class="flex items-center gap-1.5">
-              <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
-              <span>OpenRouter API Key (Optional)</span>
-            </span>
-            <span class="text-[10px] text-emerald-400 font-mono">Free Tier Ready</span>
-          </label>
-          <input 
-            id="modalApiKeyInput" 
-            type="password" 
-            placeholder="sk-or-v1-... (optional, server default active)" 
-            class="w-full rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs font-mono text-white placeholder-neutral-500 focus:border-amber-500 focus:outline-none"
-          >
-          <p class="mt-1 text-[10px] text-neutral-400">
-            Free models (Nemotron 3.5, Gemma 4, Liquid LFM) run automatically at zero cost.
-          </p>
-        </div>
-      </div>
-
-      <!-- Footer & Action Button (Guaranteed Visible) -->
-      <div class="pt-2 border-t border-neutral-800/80 text-center">
-        <p class="text-[10px] sm:text-[11px] text-neutral-400 mb-2.5">
-          All recommendations are grounded directly on scraped public data from DarGlobal & Wasalt.
-        </p>
+      <!-- Maybe later -->
+      <div class="text-center">
         <button 
-          onclick="enterAdvisoryPortal()" 
-          class="w-full rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3 text-sm font-bold text-neutral-950 transition hover:from-amber-300 hover:to-amber-500 shadow-lg shadow-amber-500/25 flex items-center justify-center space-x-2 cursor-pointer"
+          onclick="startChatting()" 
+          class="text-sm text-neutral-400 hover:text-white transition-colors cursor-pointer"
         >
-          <span>Enter Advisory Portal</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-neutral-950"></i>
+          Maybe later
         </button>
       </div>
+
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- SCREEN 2: SECOND CHATBOT SCREEN (Opens after Screen 1)   -->
+  <!-- SCREEN 2: AI CHAT CARD (Matches Image 2 Exactly)         -->
   <!-- ======================================================== -->
-  <div id="mainChatbotScreen" class="w-full flex-1 flex flex-col items-center justify-between p-3 sm:p-6 lg:p-8 transition-opacity duration-500">
+  <div id="chatCardContainer" class="w-full max-w-md flex flex-col items-center">
     
-    <!-- Top Navigation Bar -->
-    <header class="w-full max-w-4xl flex items-center justify-between py-2.5 mb-4 border-b border-neutral-800/80">
-      <div class="flex items-center space-x-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 shadow-md shadow-amber-500/20">
-          <i data-lucide="building-2" class="h-5 w-5 text-neutral-950"></i>
-        </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="font-display text-sm sm:text-base font-bold tracking-wider text-white">DARGLOBAL</span>
-            <span class="text-gold-500 font-serif font-light text-xs">×</span>
-            <span class="font-display text-sm sm:text-base font-bold tracking-wider text-neutral-300">WASALT</span>
-          </div>
-          <p class="text-[11px] text-neutral-400 tracking-tight">
-            Bespoke Real Estate & PropTech AI Advisor
-          </p>
-        </div>
-      </div>
-
-      <!-- Right Controls -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] text-neutral-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Microsoft PromptShield</span>
-        </div>
-
-        <button 
-          onclick="toggleCatalogModal()" 
-          class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-gold-500/40 text-xs text-neutral-300 transition"
-        >
-          <i data-lucide="grid" class="w-3.5 h-3.5 text-gold-400"></i>
-          <span>Catalog (23)</span>
-        </button>
-
-        <!-- Reopen Screen 1 Popup -->
-        <button 
-          onclick="reopenOnboardingPopup()" 
-          class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-semibold text-xs transition shadow-sm cursor-pointer"
-        >
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-neutral-950"></i>
-          <span class="hidden sm:inline">VIP Invitation</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Centered Luxury Chatbot Card (ai-chat-card.tsx design) -->
-    <main class="w-full max-w-4xl flex-1 flex flex-col justify-center my-auto">
+    <div class="w-full flex flex-col rounded-[28px] border border-neutral-800 bg-[#121212] p-5 shadow-2xl text-white min-h-[580px] justify-between">
       
-      <div class="w-full flex flex-col rounded-[28px] border border-neutral-800 bg-neutral-900/90 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.85)] backdrop-blur-2xl dark:border-amber-500/25 dark:shadow-[0_0_35px_-5px_rgba(212,175,55,0.15)] overflow-hidden">
-        
-        <!-- Card Header -->
-        <div class="flex items-start justify-between gap-4 border-b border-neutral-800 px-6 pb-4 pt-5">
-          <div class="flex items-center space-x-3.5">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 shadow-md shadow-amber-500/20">
-              <i data-lucide="building-2" class="h-5 w-5 text-neutral-950"></i>
-            </div>
-            <div>
-              <div class="flex items-center space-x-2">
-                <h2 class="font-serif text-base font-bold tracking-wide text-white">
-                  DarGlobal × Wasalt Advisor
-                </h2>
-                <span class="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-400">
-                  PRO RAG
-                </span>
-              </div>
-              <p class="text-xs text-neutral-400">
-                Bespoke Real Estate & PropTech Intelligence
-              </p>
-            </div>
-          </div>
-
-          <!-- Reset Button -->
+      <!-- Top Header -->
+      <div class="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+        <div>
+          <h2 class="text-lg font-semibold text-white tracking-tight">New Chat</h2>
+          <p class="text-xs text-neutral-400 mt-0.5">How can I help you today?</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <!-- Reset Conversation Button -->
           <button 
             id="resetBtn" 
-            onclick="resetConversation()" 
-            title="Reset Conversation"
-            class="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-800 hover:text-white transition cursor-pointer"
+            onclick="resetChat()" 
+            title="Reset Chat"
+            class="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white transition cursor-pointer"
           >
             <i id="resetIcon" data-lucide="rotate-ccw" class="h-4 w-4"></i>
           </button>
         </div>
+      </div>
 
-        <!-- Scope Filter Pills -->
-        <div class="px-6 py-2.5 bg-neutral-950/50 border-b border-neutral-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div class="flex items-center space-x-1.5">
-            <span class="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mr-1">Scope:</span>
-            <button onclick="setScope('')" id="scope-all" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 transition cursor-pointer">
-              All Portfolios
-            </button>
-            <button onclick="setScope('DarGlobal')" id="scope-darglobal" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-neutral-400 hover:text-white border border-transparent transition cursor-pointer">
-              DarGlobal (International)
-            </button>
-            <button onclick="setScope('Wasalt')" id="scope-wasalt" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-neutral-400 hover:text-white border border-transparent transition cursor-pointer">
-              Wasalt (Saudi Arabia)
-            </button>
+      <!-- Center Body: Empty State or Conversation Stream -->
+      <div id="chatBody" class="flex-1 flex flex-col justify-center py-6 overflow-y-auto max-h-[380px] pr-1">
+        
+        <!-- Empty State matching Image 2 -->
+        <div id="emptyState" class="text-center my-auto">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-800/80 mx-auto mb-4">
+            <i data-lucide="message-circle-dashed" class="h-6 w-6 text-neutral-300"></i>
           </div>
-          <div class="text-[11px] text-amber-400/90 font-mono flex items-center space-x-1">
-            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-            <span>Sub-200ms SSE</span>
-          </div>
-        </div>
-
-        <!-- Card Body / Greeting -->
-        <div id="greetingContainer" class="px-6 pt-6 pb-4">
-          <h3 class="font-display text-xl sm:text-2xl font-bold tracking-tight text-white uppercase">
-            Welcome to Your Private Advisory
+          <h3 class="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+            Morning, Arihant!
           </h3>
-          <p class="mt-1 text-xs sm:text-sm text-neutral-400">
-            Inquire about branded residences, verified pricing, or Saudi master developments.
+          <p class="text-sm text-neutral-400 max-w-xs mx-auto mt-2 leading-relaxed">
+            What are we working on today? Press send to start a new conversation
           </p>
         </div>
 
-        <!-- Live Messages Stream Container (hidden when empty) -->
-        <div id="messagesContainer" class="px-6 space-y-4 max-h-[460px] overflow-y-auto hidden pb-4">
-          <!-- Dynamic chat turns appended here -->
-        </div>
-
-        <!-- Typing / Status Indicator -->
-        <div id="statusIndicator" class="px-6 py-1.5 text-xs text-amber-400 font-mono flex items-center space-x-2 hidden">
-          <div class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></div>
-          <span id="statusText">Consulting portfolio intelligence...</span>
-        </div>
-
-        <!-- Composer Input Box -->
-        <div class="p-4 sm:p-6 bg-neutral-950/60 border-t border-neutral-800/80">
-          <div class="relative rounded-2xl border border-neutral-800 bg-neutral-900/90 p-3 shadow-inner focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/40 transition">
-            <textarea 
-              id="chatInput" 
-              rows="2" 
-              placeholder="Show me luxury branded residences in Dubai by DarGlobal..."
-              class="w-full resize-none bg-transparent text-sm text-white placeholder-neutral-500 focus:outline-none"
-              onkeydown="handleKeyDown(event)"
-            ></textarea>
-
-            <div class="flex items-center justify-between pt-2 border-t border-neutral-800/60 mt-1">
-              <div class="flex items-center space-x-1">
-                <button 
-                  onclick="insertPrompt('Show me luxury branded residences in Dubai by DarGlobal')"
-                  class="text-[10px] sm:text-xs text-neutral-400 hover:text-amber-300 px-2 py-1 rounded-md hover:bg-neutral-800 transition cursor-pointer"
-                >
-                  🇦🇪 Dubai Branded
-                </button>
-                <button 
-                  onclick="insertPrompt('What luxury villas are available in Riyadh on Wasalt under 4M SAR?')"
-                  class="text-[10px] sm:text-xs text-neutral-400 hover:text-amber-300 px-2 py-1 rounded-md hover:bg-neutral-800 transition cursor-pointer"
-                >
-                  🇸🇦 Riyadh Villas
-                </button>
-                <button 
-                  onclick="insertPrompt('Tell me about the Tierra Viva Lamborghini villas in Spain and their prices')"
-                  class="text-[10px] sm:text-xs text-neutral-400 hover:text-amber-300 px-2 py-1 rounded-md hover:bg-neutral-800 transition hidden sm:inline cursor-pointer"
-                >
-                  🇪🇸 Lamborghini Villas
-                </button>
-              </div>
-
-              <button 
-                id="sendBtn" 
-                onclick="sendMessage()" 
-                aria-label="Send message"
-                class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-neutral-950 transition hover:from-amber-300 hover:to-amber-500 shadow-md shadow-amber-500/20 disabled:opacity-50 cursor-pointer"
-              >
-                <i data-lucide="arrow-up" class="h-4 w-4"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between mt-2.5 px-1 text-[11px] text-neutral-500">
-            <span>Press <kbd class="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 font-mono text-[10px]">Enter</kbd> to send, <kbd class="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 font-mono text-[10px]">Shift+Enter</kbd> for newline</span>
-            <span class="flex items-center gap-1 text-emerald-400">
-              <i data-lucide="shield" class="w-3 h-3"></i>
-              <span>Identity Protected</span>
-            </span>
-          </div>
+        <!-- Messages Container (Visible when active) -->
+        <div id="messagesList" class="space-y-4 hidden">
+          <!-- Messages dynamically appended here -->
         </div>
 
       </div>
 
-      <!-- Suggested Quick Inquiries -->
-      <div class="w-full mt-4 flex flex-wrap gap-2 justify-center">
-        <button onclick="insertPrompt('Show me luxury branded residences in Dubai by DarGlobal')" class="text-xs bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-800 hover:border-amber-500/40 text-neutral-300 px-3 py-1.5 rounded-full transition cursor-pointer">
-          ✨ Dubai Branded Penthouses
-        </button>
-        <button onclick="insertPrompt('What luxury villas are available in Riyadh on Wasalt under 4M SAR?')" class="text-xs bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-800 hover:border-amber-500/40 text-neutral-300 px-3 py-1.5 rounded-full transition cursor-pointer">
-          🏡 Riyadh Family Villas (Wasalt)
-        </button>
-        <button onclick="insertPrompt('Tell me about the Tierra Viva Lamborghini villas in Spain and their prices')" class="text-xs bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-800 hover:border-amber-500/40 text-neutral-300 px-3 py-1.5 rounded-full transition cursor-pointer">
-          🏎️ Lamborghini Villas (Spain)
-        </button>
-        <button onclick="insertPrompt('Which properties feature private infinity pools and branded designer interiors?')" class="text-xs bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-800 hover:border-amber-500/40 text-neutral-300 px-3 py-1.5 rounded-full transition cursor-pointer">
-          🏊 Infinity Pools & Luxury Specs
-        </button>
-      </div>
+      <!-- Composer Box matching Image 2 -->
+      <div class="rounded-2xl bg-neutral-900 border border-neutral-800 p-4">
+        <textarea 
+          id="chatInput" 
+          rows="2" 
+          placeholder="I'm building a chat for our app and the scroll behavior..."
+          class="w-full resize-none bg-transparent text-sm text-white placeholder-neutral-500 focus:outline-none"
+          onkeydown="handleKeyDown(event)"
+        ></textarea>
 
-    </main>
+        <div class="flex items-center justify-between pt-3 border-t border-neutral-800/80 mt-1">
+          <!-- Plus / Options Button -->
+          <button 
+            type="button" 
+            onclick="toggleScopeFilter()" 
+            id="plusBtn"
+            title="Scope: All Portfolios"
+            class="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition cursor-pointer"
+          >
+            <i data-lucide="plus" class="h-4 w-4"></i>
+          </button>
 
-    <!-- Footer Copyright -->
-    <footer class="w-full max-w-4xl text-center py-2 text-[11px] text-neutral-500">
-      DarGlobal × Wasalt Luxury Real Estate AI Advisor • Grounded with Scraped Portfolios • Microsoft PromptShield
-    </footer>
+          <!-- Current Scope Tag (Subtle) -->
+          <span id="scopeBadge" class="text-[11px] text-neutral-400 font-medium">All Portfolios</span>
 
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- CATALOG MODAL (23 PROPERTIES)                            -->
-  <!-- ======================================================== -->
-  <div id="catalogModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md hidden">
-    <div class="relative w-full max-w-4xl max-h-[85vh] rounded-[2rem] border border-neutral-800 bg-neutral-900 p-6 shadow-2xl flex flex-col">
-      <div class="flex items-center justify-between pb-4 border-b border-neutral-800">
-        <div>
-          <h2 class="text-lg font-bold text-white font-display">Verified Real Estate Catalog</h2>
-          <p class="text-xs text-neutral-400">23 Grounded Properties from DarGlobal and Wasalt</p>
+          <!-- Send Button (White circular arrow) -->
+          <button 
+            id="sendBtn" 
+            type="button" 
+            onclick="sendMessage()" 
+            aria-label="Send message"
+            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition cursor-pointer"
+          >
+            <i data-lucide="arrow-up" class="h-4 w-4 stroke-[2.5]"></i>
+          </button>
         </div>
-        <button onclick="toggleCatalogModal()" class="p-2 text-neutral-400 hover:text-white rounded-full hover:bg-neutral-800">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
       </div>
 
-      <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pt-4 flex-1 pr-1">
-        <!-- Rendered dynamically -->
-      </div>
     </div>
+
   </div>
 
   <!-- ======================================================== -->
@@ -460,132 +255,98 @@
   <!-- ======================================================== -->
   <script>
     // State
-    let activeFilter = "";
     let conversationHistory = [];
-    let customApiKey = "";
-    let propertiesCatalog = [];
+    let activeFilter = "";
+    const filterOptions = ["", "DarGlobal", "Wasalt"];
+    let filterIndex = 0;
 
-    // Curated Typewriter prompts
-    const TYPEWRITER_PROMPTS = [
-      "Show me luxury branded residences in Dubai by DarGlobal...",
+    // Typewriter prompts inspired by user requests & real estate data
+    const PROMPTS = [
+      "I'm building a chat for our app and the scroll behavior is driving me nuts.",
+      "Show me luxury branded residences in Dubai by DarGlobal",
       "What luxury family villas are available in Riyadh on Wasalt under 4M SAR?",
-      "Tell me about the Tierra Viva Lamborghini villas in Spain and their prices...",
-      "Compare DarGlobal international projects with Wasalt Saudi master developments...",
-      "Which properties feature private infinity pools and branded designer interiors?"
+      "Tell me about the Tierra Viva Lamborghini villas in Spain and their prices",
+      "Compare DarGlobal international projects with Wasalt Saudi developments"
     ];
 
-    let typewriterIndex = 0;
-    let charIndex = 0;
+    let promptIdx = 0;
+    let charIdx = 0;
     let isDeleting = false;
-    let typewriterTimer = null;
-    let userHasTyped = false;
+    let timer = null;
+    let userActive = false;
 
-    // Typewriter effect
+    // Smooth Typewriter
     function runTypewriter() {
       const input = document.getElementById("chatInput");
-      if (!input || userHasTyped) return;
+      if (!input || userActive) return;
 
-      const currentPrompt = TYPEWRITER_PROMPTS[typewriterIndex];
+      const current = PROMPTS[promptIdx];
       if (isDeleting) {
-        input.setAttribute("placeholder", currentPrompt.substring(0, charIndex - 1));
-        charIndex--;
+        input.setAttribute("placeholder", current.substring(0, charIdx - 1));
+        charIdx--;
       } else {
-        input.setAttribute("placeholder", currentPrompt.substring(0, charIndex + 1));
-        charIndex++;
+        input.setAttribute("placeholder", current.substring(0, charIdx + 1));
+        charIdx++;
       }
 
-      let speed = isDeleting ? 20 : 45;
+      let speed = isDeleting ? 15 : 45;
 
-      if (!isDeleting && charIndex === currentPrompt.length) {
-        speed = 3000; // Hold full text for 3 seconds
+      if (!isDeleting && charIdx === current.length) {
+        speed = 3400; // Hold for 3.4 seconds
         isDeleting = true;
-      } else if (isDeleting && charIndex === 0) {
+      } else if (isDeleting && charIdx === 0) {
         isDeleting = false;
-        typewriterIndex = (typewriterIndex + 1) % TYPEWRITER_PROMPTS.length;
-        speed = 500;
+        promptIdx = (promptIdx + 1) % PROMPTS.length;
+        speed = 800;
       }
 
-      typewriterTimer = setTimeout(runTypewriter, speed);
+      timer = setTimeout(runTypewriter, speed);
     }
 
-    // Step 1: Popup Dismissal -> Opens Step 2 Chatbot
-    function enterAdvisoryPortal() {
-      const keyInput = document.getElementById("modalApiKeyInput");
-      if (keyInput && keyInput.value.trim()) {
-        customApiKey = keyInput.value.trim();
-        fetch("/api/config", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ openrouter_api_key: customApiKey })
-        }).catch(console.error);
-      }
-      
-      const popup = document.getElementById("onboardingPopupOverlay");
-      popup.classList.add("hidden");
-
-      // Focus chat input on the chatbot screen
-      setTimeout(() => {
-        const input = document.getElementById("chatInput");
-        if (input) input.focus();
-      }, 100);
+    // Step 1: Start Chatting Button Closes Screen 1 Modal
+    function startChatting() {
+      const modal = document.getElementById("modalOverlay");
+      modal.classList.add("hidden");
+      const input = document.getElementById("chatInput");
+      if (input) input.focus();
     }
 
-    // Reopen Screen 1 Popup anytime
-    function reopenOnboardingPopup() {
-      const popup = document.getElementById("onboardingPopupOverlay");
-      popup.classList.remove("hidden");
-      lucide.createIcons();
-    }
+    // Toggle Scope with '+' Button
+    function toggleScopeFilter() {
+      filterIndex = (filterIndex + 1) % filterOptions.length;
+      activeFilter = filterOptions[filterIndex];
+      const badge = document.getElementById("scopeBadge");
+      const plusBtn = document.getElementById("plusBtn");
 
-    // Scope selection
-    function setScope(source) {
-      activeFilter = source;
-      const allBtn = document.getElementById("scope-all");
-      const dgBtn = document.getElementById("scope-darglobal");
-      const wsBtn = document.getElementById("scope-wasalt");
-
-      [allBtn, dgBtn, wsBtn].forEach(b => {
-        b.className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-neutral-400 hover:text-white border border-transparent transition cursor-pointer";
-      });
-
-      if (!source) {
-        allBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 transition cursor-pointer";
-      } else if (source === "DarGlobal") {
-        dgBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 transition cursor-pointer";
-      } else if (source === "Wasalt") {
-        wsBtn.className = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 transition cursor-pointer";
+      if (!activeFilter) {
+        badge.innerText = "All Portfolios";
+        plusBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition cursor-pointer";
+      } else if (activeFilter === "DarGlobal") {
+        badge.innerText = "DarGlobal (Intl)";
+        plusBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white transition cursor-pointer";
+      } else if (activeFilter === "Wasalt") {
+        badge.innerText = "Wasalt (Saudi)";
+        plusBtn.className = "flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white transition cursor-pointer";
       }
     }
 
-    // Reset conversation
-    function resetConversation() {
-      const icon = document.getElementById("resetIcon");
-      if (icon) icon.classList.add("spin-active");
-      setTimeout(() => icon && icon.classList.remove("spin-active"), 600);
-
+    // Reset Chat
+    function resetChat() {
       conversationHistory = [];
-      const container = document.getElementById("messagesContainer");
-      container.innerHTML = "";
-      container.classList.add("hidden");
+      const messagesList = document.getElementById("messagesList");
+      messagesList.innerHTML = "";
+      messagesList.classList.add("hidden");
+      document.getElementById("emptyState").classList.remove("hidden");
 
-      document.getElementById("greetingContainer").classList.remove("hidden");
-      document.getElementById("chatInput").value = "";
-      userHasTyped = false;
+      const input = document.getElementById("chatInput");
+      input.value = "";
+      userActive = false;
       runTypewriter();
     }
 
-    // Insert prompt helper
-    function insertPrompt(text) {
-      userHasTyped = true;
-      clearTimeout(typewriterTimer);
-      const input = document.getElementById("chatInput");
-      input.value = text;
-      input.focus();
-    }
-
-    // Keyboard handler
+    // Key Handler
     function handleKeyDown(e) {
-      userHasTyped = true;
+      userActive = true;
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
@@ -599,24 +360,21 @@
       if (!text) return;
 
       input.value = "";
-      userHasTyped = true;
+      userActive = true;
+      clearTimeout(timer);
 
-      // Show container
-      const container = document.getElementById("messagesContainer");
-      container.classList.remove("hidden");
-      document.getElementById("greetingContainer").classList.add("hidden");
+      // Hide empty state, show messages list
+      document.getElementById("emptyState").classList.add("hidden");
+      const messagesList = document.getElementById("messagesList");
+      messagesList.classList.remove("hidden");
 
-      // Append user turn
+      // Append User message
       appendUserMessage(text);
 
-      // Append empty assistant turn for streaming
+      // Append Assistant Streaming Box
       const assistantBox = appendAssistantBox();
 
-      // Show status
-      const statusInd = document.getElementById("statusIndicator");
-      statusInd.classList.remove("hidden");
-
-      // Add to history
+      // Add to conversation
       conversationHistory.push({ role: "user", content: text });
 
       try {
@@ -626,16 +384,11 @@
           body: JSON.stringify({
             message: text,
             conversation_history: conversationHistory.slice(-6),
-            source_filter: activeFilter || null,
-            api_key: customApiKey || null
+            source_filter: activeFilter || null
           })
         });
 
-        statusInd.classList.add("hidden");
-
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -659,17 +412,17 @@
                 if (parsed.token) {
                   fullReply += parsed.token;
                   assistantBox.contentDiv.innerHTML = marked.parse(fullReply);
-                  container.scrollTop = container.scrollHeight;
+                  scrollDown();
                 }
                 if (parsed.sources && parsed.sources.length > 0 && !sourcesAttached) {
                   sourcesAttached = true;
                   renderPropertyCards(assistantBox.cardContainer, parsed.sources);
-                  container.scrollTop = container.scrollHeight;
+                  scrollDown();
                 }
               } catch (e) {
                 fullReply += dataStr;
                 assistantBox.contentDiv.innerHTML = marked.parse(fullReply);
-                container.scrollTop = container.scrollHeight;
+                scrollDown();
               }
             }
           }
@@ -677,77 +430,61 @@
 
         conversationHistory.push({ role: "assistant", content: fullReply });
       } catch (err) {
-        console.error("Error communicating with AI advisor:", err);
-        statusInd.classList.add("hidden");
-        assistantBox.contentDiv.innerHTML = `<div class="p-3 bg-red-900/30 border border-red-800 rounded-xl text-red-200 text-xs">Error communicating with advisor: ${err.message}. Please verify OpenRouter connectivity.</div>`;
+        assistantBox.contentDiv.innerHTML = `<p class="text-xs text-red-400">Error communicating with advisor: ${err.message}</p>`;
       }
     }
 
     function appendUserMessage(text) {
-      const container = document.getElementById("messagesContainer");
+      const list = document.getElementById("messagesList");
       const div = document.createElement("div");
       div.className = "flex justify-end";
       div.innerHTML = `
-        <div class="max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-r from-amber-500/20 to-amber-700/20 border border-amber-500/40 p-3.5 text-xs sm:text-sm text-white">
-          <p class="leading-relaxed whitespace-pre-wrap">${escapeHtml(text)}</p>
+        <div class="max-w-[85%] rounded-2xl bg-neutral-800 text-white px-4 py-2.5 text-sm leading-relaxed">
+          <p class="whitespace-pre-wrap">${escapeHtml(text)}</p>
         </div>
       `;
-      container.appendChild(div);
-      container.scrollTop = container.scrollHeight;
+      list.appendChild(div);
+      scrollDown();
     }
 
     function appendAssistantBox() {
-      const container = document.getElementById("messagesContainer");
+      const list = document.getElementById("messagesList");
       const div = document.createElement("div");
-      div.className = "flex flex-col space-y-3";
+      div.className = "flex flex-col text-sm items-start";
       div.innerHTML = `
-        <div class="flex items-start gap-3">
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 shadow-sm mt-1">
-            <i data-lucide="building-2" class="h-4 w-4 text-neutral-950"></i>
+        <div class="max-w-[92%] rounded-2xl bg-neutral-900 border border-neutral-800 p-3.5 text-neutral-200">
+          <div class="prose prose-invert max-w-none prose-content">
+            <span class="cursor-pulse"></span>
           </div>
-          <div class="flex-1 rounded-2xl rounded-tl-sm bg-neutral-950/80 border border-neutral-800 p-4 text-xs sm:text-sm text-neutral-200 shadow-md">
-            <div class="prose prose-invert max-w-none prose-content">
-              <span class="cursor-pulse"></span>
-            </div>
-            <div class="mt-4 pt-3 border-t border-neutral-800/80 property-cards-slot"></div>
-          </div>
+          <div class="mt-3 property-cards-slot"></div>
         </div>
       `;
-      container.appendChild(div);
-      lucide.createIcons();
+      list.appendChild(div);
+      scrollDown();
 
       const contentDiv = div.querySelector(".prose-content");
       const cardContainer = div.querySelector(".property-cards-slot");
-
       return { contentDiv, cardContainer };
     }
 
     function renderPropertyCards(slot, properties) {
       if (!properties || properties.length === 0) return;
-      let html = `<div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Featured Curated Listings:</div>`;
-      html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
-
-      properties.forEach(p => {
+      let html = `<div class="space-y-2.5 pt-2 border-t border-neutral-800">`;
+      properties.slice(0, 3).forEach(p => {
         html += `
-          <div class="rounded-xl border border-neutral-800 bg-neutral-900/90 overflow-hidden hover:border-amber-500/40 transition flex flex-col">
-            ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="h-28 w-full object-cover">` : ''}
-            <div class="p-3 flex-1 flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between text-[10px] text-neutral-400 mb-1">
-                  <span class="font-semibold text-amber-400">${p.source}</span>
-                  <span>${p.city || p.location}</span>
-                </div>
-                <h4 class="text-xs font-bold text-white leading-tight mb-1">${p.title}</h4>
-                <p class="text-[11px] text-amber-300 font-mono font-bold">${p.price || 'Price on request'}</p>
+          <div class="rounded-xl border border-neutral-800 bg-[#171717] p-2.5 flex items-center space-x-3 hover:border-neutral-700 transition">
+            ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="h-14 w-14 rounded-lg object-cover shrink-0">` : ''}
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between text-[11px] text-neutral-400 mb-0.5">
+                <span class="text-blue-400 font-medium">${p.source}</span>
+                <span>${p.city || p.location}</span>
               </div>
-              <div class="mt-2.5 pt-2 border-t border-neutral-800 flex items-center justify-between">
-                <span class="text-[10px] text-neutral-400">${p.specs?.bedrooms ? p.specs.bedrooms + ' Beds' : p.property_type}</span>
-                <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-amber-400 hover:underline flex items-center gap-1">
-                  <span>View Project</span>
-                  <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-              </div>
+              <h4 class="text-xs font-semibold text-white truncate">${p.title}</h4>
+              <p class="text-xs text-neutral-200 font-semibold">${p.price || 'Price on request'}</p>
             </div>
+            <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            </a>
           </div>
         `;
       });
@@ -756,66 +493,26 @@
       lucide.createIcons();
     }
 
-    // Catalog Modal
-    async function toggleCatalogModal() {
-      const modal = document.getElementById("catalogModal");
-      if (modal.classList.contains("hidden")) {
-        modal.classList.remove("hidden");
-        if (propertiesCatalog.length === 0) {
-          try {
-            const res = await fetch("/api/properties");
-            const data = await res.json();
-            propertiesCatalog = data.properties || [];
-            renderCatalogGrid(propertiesCatalog);
-          } catch (e) {
-            console.error("Failed to fetch catalog:", e);
-          }
-        }
-      } else {
-        modal.classList.add("hidden");
-      }
-      lucide.createIcons();
-    }
-
-    function renderCatalogGrid(items) {
-      const grid = document.getElementById("catalogGrid");
-      grid.innerHTML = items.map(p => `
-        <div class="rounded-xl border border-neutral-800 bg-neutral-950 p-3 flex flex-col justify-between">
-          <div>
-            ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="h-28 w-full object-cover rounded-lg mb-2">` : ''}
-            <div class="flex justify-between items-center text-[10px] mb-1">
-              <span class="text-amber-400 font-semibold">${p.source}</span>
-              <span class="text-neutral-400">${p.city}</span>
-            </div>
-            <h4 class="text-xs font-bold text-white">${p.title}</h4>
-            <p class="text-xs text-amber-300 font-mono font-bold mt-1">${p.price}</p>
-          </div>
-          <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="mt-2 text-center py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs text-white transition">
-            Explore Property
-          </a>
-        </div>
-      `).join("");
-      lucide.createIcons();
+    function scrollDown() {
+      const body = document.getElementById("chatBody");
+      body.scrollTop = body.scrollHeight;
     }
 
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // Initialize
     window.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
       runTypewriter();
 
-      fetch("/api/health")
-        .then(res => res.json())
-        .then(data => {
-          if (data.openrouter_key_set) {
-            const keyInput = document.getElementById("modalApiKeyInput");
-            if (keyInput) keyInput.placeholder = "Server API Key is active (ready)";
-          }
-        })
-        .catch(console.error);
+      const input = document.getElementById("chatInput");
+      input.addEventListener("focus", () => {
+        if (!userActive) {
+          userActive = true;
+          input.value = PROMPTS[promptIdx];
+        }
+      });
     });
   </script>
 

@@ -1,62 +1,60 @@
 "use client";
 
 import React, { useState } from "react";
-import { LuxuryOnboardingModal } from "@/components/ui/luxury-onboarding-modal";
-import { LuxuryAIChatCard } from "@/components/ui/luxury-chat-card";
+import { ModalCard } from "@/components/ui/modal-card";
+import { AIChatCard, Message } from "@/components/ui/ai-chat-card";
 
 export default function LuxuryRealEstateAdvisorDemo() {
   const [modalOpen, setModalOpen] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = async (text: string) => {
-    // Optimistically update conversation
     setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setIsLoading(true);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: text,
-          source_filter: activeFilter || null,
-          api_key: apiKey || null,
-        }),
+        body: JSON.stringify({ message: text }),
       });
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply || "No response received." },
+        {
+          role: "assistant",
+          content: data.reply || "No response received.",
+          sources: data.sources || [],
+        },
       ]);
     } catch (err) {
       console.error("Chat error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 p-4 sm:p-8 flex flex-col items-center justify-center">
-      {/* Screen 1: Executive Onboarding Modal */}
-      <LuxuryOnboardingModal
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      {/* Screen 1: Modal Card */}
+      <ModalCard
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        initialKey={apiKey}
-        onConnectKey={(key) => {
-          setApiKey(key);
-          setModalOpen(false);
-        }}
+        onStartChatting={() => setModalOpen(false)}
+        onMaybeLater={() => setModalOpen(false)}
       />
 
-      {/* Screen 2: Interactive Real Estate Advisory Chat Card */}
-      <div className="w-full max-w-lg">
-        <LuxuryAIChatCard
-          activeSourceFilter={activeFilter}
-          onFilterChange={(f) => setActiveFilter(f)}
-          onSend={handleSend}
-          onReset={() => setMessages([])}
-          className="min-h-[560px]"
-        />
-      </div>
+      {/* Screen 2: AI Chat Card */}
+      <AIChatCard
+        title="New Chat"
+        subtitle="How can I help you today?"
+        greeting="Morning, Arihant!"
+        prompt="What are we working on today? Press send to start a new conversation"
+        messages={messages}
+        isLoading={isLoading}
+        onSend={handleSend}
+        onReset={() => setMessages([])}
+      />
     </div>
   );
 }

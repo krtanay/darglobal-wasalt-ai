@@ -13,7 +13,7 @@ import os
 import sys
 import json
 import urllib.parse
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from typing import Dict, Any, Optional
 import socket
 
@@ -309,7 +309,7 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
 
 def run_server(port: int = 8080):
     host = "0.0.0.0"
-    server = HTTPServer((host, port), RealEstateRequestHandler)
+    server = ThreadingHTTPServer((host, port), RealEstateRequestHandler)
     print(f"================================================================")
     print(f"🏢 DarGlobal & Wasalt Real Estate AI Chatbot Server")
     print(f"   Security: Microsoft PromptShield + IdentityShield Active")
