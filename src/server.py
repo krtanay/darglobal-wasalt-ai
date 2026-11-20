@@ -132,8 +132,25 @@ class RealEstateRequestHandler(SimpleHTTPRequestHandler):
             return
 
         elif path == "/" or path == "/index.html":
-            self.path = "/index.html"
-            return super().do_GET()
+            index_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public", "index.html")
+            if not os.path.exists(index_file):
+                index_file = os.path.join("public", "index.html")
+            try:
+                with open(index_file, "rb") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+                self.send_header("Pragma", "no-cache")
+                self.send_header("Expires", "0")
+                self._send_security_headers()
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            except Exception as e:
+                self.send_error(500, str(e))
+                return
 
         else:
             return super().do_GET()
